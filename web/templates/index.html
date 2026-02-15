@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch 2 Konkurranse - Høgskolen i Østfold</title>
+    <!-- Last inn Lucide Icons (for profesjonelle ikoner) --><script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<!-- Sender logo-stien til script.js for animasjon -->
+<body data-logo-url="{{ url_for('static', filename='images/hiof_logo.png') }}">
+    
+    <!-- Fallende bananer container -->
+    <div id="fallingBananasContainer"></div>
+    
+    <!-- Statisk HiØF logo i øvre høyre hjørne -->
+    <div class="static-logo-corner">
+        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="Høgskolen i Østfold Logo">
+    </div>
+    
+    <!-- Hovedkontainer som bytter innhold -->
+    <div id="app-container">
+        
+        <!-- Registreringsskjerm -->
+        <div id="registrering-skjerm" class="container">
+            <!-- Header med logo (større) -->
+            <div class="header">
+                <!-- Animerte partikler med logoer i bakgrunnen -->
+                <div class="header-particles">
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                </div>
+                
+                <div class="header-content">
+                    <div class="title-container">
+                        <h1 class="animated-title">
+                            <span class="title-line-1">VINN EN</span>
+                            <span class="title-line-2">NINTENDO SWITCH 2</span>
+                        </h1>
+                        <div class="title-underline"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informasjonstekst -->
+            <div class="info-text">
+                <p>Delta i konkurransen ved å prøve <strong>et spill laget av studenter</strong><br>
+                på Høgskolen i Østfold og få sjansen til å vinne en <strong>Nintendo Switch 2!</strong></p>
+                <p>Fyll ut informasjonen din nedenfor, spill spillet,<br>
+                og registrer resultatet ditt for å <strong>delta i trekningen</strong>.</p>
+            </div>
+            
+            <!-- Informasjonsboks 1: Vinnersjanse-info (ORANSJE - OVER skjema) -->
+            <div class="info-box-container info-box-secondary">
+                <p style="font-size: 1.05em;"><strong>VIKTIG: Alle får nøyaktig 1 sjanse - uansett!</strong></p>
+                <p style="margin-top: 5px;">Spillresultat eller hvordan du melder deg på (via spillet eller via nettskjema) påvirker <strong>IKKE</strong> vinnersjansen din.</p>
+                <p style="margin-top: 5px;">Du kan få <strong>3 lodd</strong> ved å godta markedsføring nederst på siden når du godkjenner personvernerklæringen. Du kan også få <strong>3 lodd</strong> ved å avhuke at du ikke vil ha markedsføring.</p>
+                <p style="margin-top: 5px; font-size: 0.95em;"><em>Du trenger ikke å ta et valg - du kan fortsatt være med i trekningen med 1 lodd.</em></p>
+            </div>
+            
+            <!-- Skjema -->
+            <div class="form-container">
+                <div class="form-inner">
+                    <div class="form-row">
+                        <label for="navn">Navn</label>
+                        <input type="text" id="navn" placeholder="Ditt fulle navn" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="telefon">Telefon</label>
+                        <input type="text" id="telefon" placeholder="Ditt telefonnummer" maxlength="15" pattern="\d{8,15}" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="epost">E-post</label>
+                        <input type="email" id="epost" placeholder="Din e-postadresse" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GDPR Container (separat) -->
+            <div class="form-container">
+                <div class="form-inner">
+                    <!-- Aldersbekreftelse (GDPR Art. 8) -->
+                    <div class="form-row age-confirmation">
+                        <label class="age-checkbox-label">
+                            <input type="checkbox" id="age-confirmation-checkbox" required>
+                            <span>Jeg bekrefter at jeg er 13 år eller eldre</span>
+                        </label>
+                        <p class="age-info-text">Er du under 13 år, må en foresatt gi samtykke her sammen med en av oss som jobber her. Vi lagrer ikke opplysninger før foresatt har bekreftet.</p>
+                    </div>
+                    
+                    <!-- GDPR Les Personvernerklæring knapp (inne i skjema) -->
+                    <div class="form-row" style="margin-top: 15px;">
+                        <button id="les-gdpr-knapp" class="btn-gdpr-les">
+                            Les personvernerklæring og samtykke
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informasjonsboks 2: Slik fungerer det (GRØNN - UNDER GDPR) -->
+            <div class="info-box-container info-box-primary">
+                <h3 class="info-title">Slik fungerer det:</h3>
+                <p style="font-size: 14px;">Spill <strong>Echoes of Time</strong> og prøv å slå alle nivåene ved å få tak i alle krystallene!</p>
+            </div>
+            
+            <!-- Statusmelding for validering -->
+            <div id="status-melding"></div>
+
+            <!-- Start-knapp -->
+            <div class="button-container">
+                <!-- ✅ NYTT: Rød pil som peker på knappen (VENSTRE) -->
+                <div id="pil-indikator" class="arrow-indicator arrow-left" style="display: none;">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-head"></div>
+                    <div class="arrow-text">KLIKK HER!</div>
+                </div>
+                
+                <!-- ✅ NYTT: Rød pil som peker på knappen (HØYRE) -->
+                <div id="pil-indikator-hoyre" class="arrow-indicator arrow-right" style="display: none;">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-head"></div>
+                    <div class="arrow-text">KLIKK HER!</div>
+                </div>
+                
+                <button id="start-knapp" class="btn-start">
+                    <span id="knapp-tekst">Start ECHOES OF TIME</span>
+                    <span id="ready-indikator" class="ready-indicator" style="display: none;">✓</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Venteskjerm (Viser når spillet er startet) -->
+        <div id="vente-skjerm" class="container" style="display:none;">
+            <!-- Header med logo -->
+            <div class="header">
+                <!-- Animerte partikler med logoer i bakgrunnen -->
+                <div class="header-particles">
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                </div>
+                
+                <div class="header-content">
+                    <div class="title-container">
+                        <h1 class="animated-title">
+                            <span class="title-line-1">Verifiser at</span>
+                            <span class="title-line-2">BRUKERINFORMASJONEN ER RIKTIG</span>
+                        </h1>
+                        <div class="title-underline"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vente-content">
+                <div class="info-row">
+                    <label>Navn:</label>
+                    <input type="text" id="vente-navn" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('navn')">Rediger</button>
+                </div>
+
+                <div class="info-row">
+                    <label>Telefon:</label>
+                    <input type="text" id="vente-telefon" maxlength="15" pattern="\d{8,15}" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('telefon')">Rediger</button>
+                </div>
+
+                <div class="info-row">
+                    <label>E-post:</label>
+                    <input type="email" id="vente-epost" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('epost')">Rediger</button>
+                </div>
+
+                <div id="rediger-status" class="rediger-status"></div>
+                
+                <!-- Informasjonstekst før registrering -->
+                <div class="verification-info">
+                    <p><strong>Spillet har automatisk registrert</strong> hvor mange nivåer du har greid.</p>
+                    <p class="verification-action">Verifiser at informasjonen er riktig og trykk på knappen under for å registrere deg.</p>
+                </div>
+            </div>
+
+            <!-- Registrer-knapp -->
+            <div class="button-container">
+                <button id="registrer-knapp" class="btn-register">REGISTRER DEG</button>
+            </div>
+        </div>
+
+        <!-- Resultatskjerm (Viser etter registrering) -->
+        <div id="resultat-skjerm" class="container" style="display:none;">
+            <div class="header">
+                <!-- Animerte partikler med logoer i bakgrunnen -->
+                <div class="header-particles">
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                    <span class="particle">
+                        <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="particle-logo">
+                    </span>
+                </div>
+                
+                <div class="header-content">
+                    <div class="title-container">
+                        <h1 class="animated-title">
+                            <span class="title-line-2">RESULTAT</span>
+                        </h1>
+                        <div class="title-underline"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="resultat-skjerm">
+                <!-- Fyrverkeri container -->
+                <div class="fireworks-container" id="fireworks-container"></div>
+                
+                <span id="result-icon-container" style="display:block; margin-bottom: 20px;">
+                    <!-- Ikon for pokal/seier. Lucide-ikon vil rendres her. -->
+                    <span data-lucide="trophy" class="trophy-icon"></span>
+                </span>
+                
+                <h2 id="result-title">Takk for at du deltok!</h2>
+                <p class="text-lg">Du er nå med i trekningen av en Nintendo Switch!</p>
+                <div class="score-display">
+                    <span id="result-score">N/A</span>
+                </div>
+                <p class="tier-text">
+                    <span id="result-tier">Trykk på ny deltagelse for å registrere deg for å ha en sjankse for å vinne en nitendo switch</span>
+                    <span id="tier-medal" class="tier-medal" style="display: none;">🥉</span>
+                </p>
+
+                <p id="auto-reset-countdown" class="auto-reset-text" style="display: none;">
+                    Tilbakestilles automatisk om <span id="countdown-seconds">60</span> sekunder
+                </p>
+
+                <button id="ny-deltaker-knapp" class="btn-ny-deltaker">
+                    <span data-lucide="rotate-ccw"></span>
+                    <span>Ny deltaker</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Laste-overlay (NY) -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <h2 id="loading-text">Laster...</h2>
+    </div>
+
+    <!-- Notifikasjons-område (NY) -->
+    <div id="notification-area" class="notification-area"></div>
+    
+    <!-- Error popup modal -->
+    <div id="error-popup" class="error-popup hidden">
+        <div class="error-popup-content">
+            <div class="error-icon">❌</div>
+            <h3 id="error-title">Feil ved registrering</h3>
+            <p id="error-message">Det oppstod en feil. Vennligst prøv igjen.</p>
+            <button id="error-ok-btn" class="error-btn">OK</button>
+        </div>
+    </div>
+    
+    <!-- Auto-reset popup -->
+    <div id="auto-reset-popup" class="auto-reset-popup hidden">
+        <div class="popup-content">
+            <h3>⏱️ Automatisk Tilbakestilling</h3>
+            <p>Siden vil tilbakestille til hovedmenyen om <strong><span id="popup-countdown">60</span> sekunder</strong></p>
+            <button id="popup-ok-btn" class="popup-btn">OK</button>
+        </div>
+    </div>
+
+    <!-- GDPR Samtykke Popup -->
+    <div id="gdpr-popup" class="gdpr-popup hidden">
+        <div class="gdpr-popup-overlay"></div>
+        <div class="gdpr-popup-content">
+            <div class="gdpr-header">
+                <h2>PERSONVERNERKLÆRING OG SAMTYKKE</h2>
+            </div>
+            
+            <div class="gdpr-body">
+                <!-- ✅ NYTT: Tydelig informasjon om markedsføring -->
+                <div class="gdpr-section gdpr-marketing-notice">
+                    <h3 style="color: #D78669;">Øk vinnersjansen din 3x! (valgfritt)</h3>
+                    <p style="font-size: 0.85em;"><strong>Du kan øke vinnersjansen til 3 lodd i stedet for 1 ved å avhuke at du vil motta markedsføring nederst på skjemaet.</strong></p>
+                    <p style="font-size: 0.85em;"><strong>Du kan også få 3 lodd i stedet for 1 ved å avhuke at du IKKE vil motta markedsføring.</strong></p>
+                    <p>Spillresultat eller hvordan du melder deg på påvirker ikke vinnersjansen - det er kun markedsføringsvalget ditt som gir deg 3 lodd.</p>
+                    <p>Du kan når som helst trekke tilbake samtykket til markedsføring ved å sende e-post til danielnj@hiof.no.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Behandlingsansvarlig</h3>
+                    <p><strong>Høgskolen i Østfold (HiØ)</strong><br>
+                    Org.nr.: 971 567 376<br>
+                    Postadresse: Høgskolen i Østfold, Postboks 700, 1757 Halden<br>
+                    E-post: postmottak@hiof.no</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Personvernombud (DPO)</h3>
+                    <p>Hanne Pernille Gulbrandsen<br>
+                    E-post: hanne.p.gulbrandsen@hiof.no</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Formål</h3>
+                    <p>Høgskolen i Østfold behandler dine personopplysninger for følgende formål:</p>
+                    <ul>
+                        <li><strong>Gjennomføring av Nintendo Switch 2-konkurranse</strong> på Spillexpo (kontakt vinner, administrasjon av konkurranse)</li>
+                        <li><strong>Markedsføring av Høgskolen i Østfold (valgfritt - gir 3x vinnersjanse!)</strong> - hvis du samtykker, vil vi sende deg informasjon om studiemuligheter, arrangementer og nyheter fra høgskolen på e-post, og du får 3 lodd i trekningen i stedet for 1</li>
+                    </ul>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Rettslig grunnlag</h3>
+                    <p><strong>For konkurransedeltakelse (kontaktopplysninger):</strong> Ditt samtykke (GDPR Artikkel 6.1.a)</p>
+                    <p><strong>For markedsføring (valgfritt):</strong> Ditt separate samtykke (GDPR Artikkel 6.1.a)</p>
+                    <p><strong>For samtykke-logg:</strong> Berettiget interesse (GDPR Artikkel 6.1.f) for å oppfylle ansvarlighetskravet i GDPR Artikkel 5.2 og 7.1</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Konsekvens ved manglende samtykke</h3>
+                    <p><strong>Uten samtykke til konkurransedeltakelse kan du ikke delta i konkurransen.</strong></p>
+                    <p><strong>Markedsføringssamtykke er valgfritt</strong> - du kan delta i konkurransen uten å motta markedsføring fra Høgskolen i Østfold.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Hvilke opplysninger samler vi?</h3>
+                    <ul>
+                        <li>Navn</li>
+                        <li>Telefonnummer <strong>(brukes kun til å kontakte vinner)</strong></li>
+                        <li><strong>E-postadresse (brukes til å kontakte vinner, og til markedsføring hvis du samtykker)</strong></li>
+                        <li>Spillresultat (antall fullførte nivåer)</li>
+                        <li>Registreringstidspunkt (dato og klokkeslett)</li>
+                        <li>Samtykke-informasjon (tidspunkt for samtykke, metode for samtykke, versjon av personvernerklæring)</li>
+                        <li>Aldersbekreftelse-tidspunkt</li>
+                        <li>Markedsføringssamtykke-status (om du har valgt å motta markedsføring eller ikke)</li>
+                    </ul>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Alderskrav</h3>
+                    <p>Konkurransen er åpen for personer 13 år eller eldre. For deltakere under 13 år kreves verifiserbart samtykke fra foresatt.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Automatiserte avgjørelser og profilering</h3>
+                    <p>Vi benytter ikke automatiserte avgjørelser eller profilering i behandlingen av dine personopplysninger.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Mottakere/databehandlere</h3>
+                    <p>Opplysningene behandles internt hos Høgskolen i Østfold av avdelingsingeniør Daniel Nilsen Johansen. Ingen eksterne databehandlere benyttes.</p>
+                </div>
+                
+                <!-- ✅ NYTT: Dedikert seksjon om markedsføring -->
+                <div class="gdpr-section gdpr-marketing-section">
+                    <h3 style="color: #D78669;">Markedsføring og 3x vinnersjanse (valgfritt)</h3>
+                    <p><strong>Ved å ta et markedsføringsvalg (enten JA eller NEI TAKK) får du 3 lodd i trekningen i stedet for 1!</strong></p>
+                    
+                    <p><strong>Hva vil du motta hvis du sier JA?</strong></p>
+                    <ul>
+                        <li>Informasjon om studiemuligheter ved Høgskolen i Østfold</li>
+                        <li>Invitasjoner til arrangementer og åpne dager</li>
+                        <li>Nyheter om høgskolen og utdanningstilbud</li>
+                        <li>Informasjon om søknadsfrister og opptak</li>
+                    </ul>
+                    
+                    <p><strong>Hvor ofte?</strong> Du vil motta e-poster fra oss noen ganger i året, typisk ved viktige søknadsfrister og arrangementer.</p>
+                    
+                    <p><strong>Kan jeg melde meg av?</strong> Ja, du har rett til å melde deg av markedsføring når som helst ved å sende e-post til danielnj@hiof.no eller klikke på "Avmeld"-lenken i bunnen av markedsførings-e-postene vi sender.</p>
+                    
+                    <p><strong>Hva skjer med e-postadressen min etter konkurransen?</strong> Etter konkurransen (28. november 2025) slettes din e-postadresse fra konkurransedatabasen. Hvis du har samtykket til markedsføring, kan e-postadressen din bli lagt til i Høgskolens generelle markedsføringsregister for fremtidig kontakt.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Overføringer utenfor EU/EØS</h3>
+                    <p>Ingen overføringer utenfor EU/EØS.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Hvordan lagres dataene?</h3>
+                    <p>Dine opplysninger lagres lokalt og trygt på en kryptert mappe på PC. Kun autorisert personell har tilgang til dataene.</p>
+                    <p><strong>Sletting:</strong> Se seksjonen "Lagringstid" nedenfor for informasjon om når dataene slettes eller eventuelt overføres til markedsføringsregister.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Lagringstid</h3>
+                    <p><strong>For konkurransedeltakelse:</strong> Dine opplysninger (navn, telefon, e-post, spillresultat) slettes fra den lokale PC-en senest 28. november 2025, etter at vinnertrekning er gjennomført og vinner er kontaktet.</p>
+                    <p>Opplysninger om vinner kan lagres lenger dersom det er påkrevd av lovgivning (f.eks. bokføringsloven eller regnskapsloven).</p>
+                    <p><strong>For markedsføring (hvis du samtykker):</strong> Etter at konkurransedataene er slettet fra lokal PC (28. november 2025), kan din e-postadresse bli overført til Høgskolens generelle markedsføringsregister for fremtidig kontakt hvis du har samtykket til markedsføring. Du kan når som helst melde deg av ved å sende e-post til danielnj@hiof.no.</p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Dine rettigheter</h3>
+                    <p>Du har følgende rettigheter under GDPR:</p>
+                    <ul>
+                        <li>Rett til innsyn i dine personopplysninger</li>
+                        <li>Rett til retting av feil informasjon</li>
+                        <li>Rett til sletting ("retten til å bli glemt")</li>
+                        <li>Rett til å begrense behandling av dine opplysninger</li>
+                        <li>Rett til dataportabilitet (å motta dine opplysninger i et strukturert format)</li>
+                        <li>Rett til å trekke tilbake samtykke når som helst</li>
+                        <li>Rett til å klage til Datatilsynet</li>
+                    </ul>
+                    <p><strong>Tilbaketrekking av samtykke:</strong> Du kan trekke tilbake samtykket like enkelt som du ga det. Tilbaketrekking påvirker ikke lovligheten av behandling som allerede har skjedd basert på samtykke før tilbaketrekkingen.</p>
+                    <p><strong>For å utøve dine rettigheter, send e-post til danielnj@hiof.no</strong></p>
+                </div>
+                
+                <div class="gdpr-section">
+                    <h3>Kontakt oss</h3>
+                    <p>Ved spørsmål om personvern eller for å utøve dine rettigheter:</p>
+                    <p><strong>Avdelingsingeniør:</strong> Daniel Nilsen Johansen<br>
+                    <strong>E-post:</strong> danielnj@hiof.no</p>
+                    <p style="margin-top: 10px;"><strong>Personvernombud:</strong> Hanne Pernille Gulbrandsen<br>
+                    <strong>E-post:</strong> hanne.p.gulbrandsen@hiof.no</p>
+                    <p style="margin-top: 15px;"><strong>For å trekke tilbake samtykke:</strong><br>
+                    Send e-post til danielnj@hiof.no med emne "Trekk tilbake samtykke" og oppgi navn og e-postadresse.</p>
+                </div>
+                
+                <div class="gdpr-consent">
+                    <label class="gdpr-checkbox-label">
+                        <input type="checkbox" id="gdpr-consent-checkbox">
+                        <span><strong>Jeg har lest informasjonen over og samtykker til:</strong>
+                        <ul style="margin-top: 10px; margin-bottom: 0;">
+                            <li>At mine personopplysninger behandles for gjennomføring av konkurransen</li>
+                        </ul>
+                        <span style="margin-top: 10px; display: block; font-size: 0.9em; font-style: italic;">Alt dette er i henhold til GDPR.</span>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- Ikke-obligatorisk markedsføringssamtykke -->
+                <div class="gdpr-consent" style="margin-top: 20px;">
+                    <label class="gdpr-checkbox-label">
+                        <input type="checkbox" id="gdpr-marketing-checkbox">
+                        <span><strong>Jeg ønsker å øke vinnersjansen min 3x ved å motta markedsføring:</strong>
+                        <ul style="margin-top: 10px; margin-bottom: 0;">
+                            <li>Jeg samtykker til å motta informasjon om studiemuligheter, arrangementer og nyheter fra Høgskolen i Østfold på e-post</li>
+                            <li><strong>Dette gir meg 3 lodd i trekningen i stedet for 1!</strong></li>
+                        </ul>
+                        <span style="margin-top: 10px; display: block; font-size: 0.9em; font-style: italic;">(Valgfritt - du kan melde deg av når som helst)</span>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- ✅ NYTT: Nei takk til markedsføring, men få 3x vinnersjanse -->
+                <div class="gdpr-consent" style="margin-top: 20px;">
+                    <label class="gdpr-checkbox-label">
+                        <input type="checkbox" id="gdpr-no-marketing-checkbox">
+                        <span><strong>Nei takk til e-postmarkedsføring. Jeg ønsker å delta med 3 lodd istedet for 1.</strong></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="gdpr-footer">
+                <button id="gdpr-godkjenn-btn" class="gdpr-btn gdpr-btn-godkjenn">
+                    JEG GODKJENNER OG VIL STARTE SPILLET
+                </button>
+                <button id="gdpr-avbryt-btn" class="gdpr-btn gdpr-btn-avbryt">
+                    Avbryt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

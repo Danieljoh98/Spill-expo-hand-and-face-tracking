@@ -1,0 +1,2498 @@
+/* HiØF Fargepalett */
+:root {
+    --hiof-sort: #23201F; /* Svart/Mørk */
+    --hiof-korall: #D78669; /* Primær knappefarge */
+    --hiof-sjogronn: #6FC2B4; /* Sekundær/Høydepunkt farge */
+    --hiof-lys-varmgra: #ECEAE5; /* Bakgrunn */
+    --hiof-lavendel: #A398A3;
+    --hiof-aquabla: #347E84; /* Header/Viktig info */
+    --hiof-varmgra: #C8C2BE;
+    --hiof-hvit: #FFFFFF;
+}
+
+/* * 1. BAKGRUNN OG ANIMASJON 
+ * Bruker Gradienter og animasjon for den pulserende bakgrunnen 
+ */
+@keyframes pulseBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body {
+    font-family: 'Inter', sans-serif; 
+    color: var(--hiof-sort);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* ✅ ENDRET: Tilbake til center for bedre sentrering */
+    padding: 15px 20px;
+    
+    /* Bakgrunnsfiks for animasjon */
+    background: linear-gradient(-45deg, var(--hiof-lys-varmgra) 0%, var(--hiof-varmgra) 50%, var(--hiof-lys-varmgra) 100%);
+    background-size: 400% 400%;
+    animation: pulseBackground 30s ease infinite;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Global styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fallende bananer animasjon */
+@keyframes fallingBanana {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg); /* Faller ned til bunnen av viewport */
+        opacity: 0;
+    }
+}
+
+/* Fallende animasjon uten rotasjon (for Pikachu) */
+@keyframes fallingNoRotate {
+    0% {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh); /* Faller ned uten å rotere */
+        opacity: 0;
+    }
+}
+
+.falling-banana {
+    position: fixed; /* Holder bananene over alt annet innhold */
+    top: 0;
+    left: var(--start-left); /* Satt via JS for tilfeldig startposisjon */
+    font-size: var(--banana-size); /* Brukes kun for emojier */
+    animation: fallingBanana var(--animation-duration) linear infinite;
+    animation-delay: var(--animation-delay); /* Satt via JS for forskjøvet start */
+    z-index: -1; /* Plasserer bananene bak innholdet, men over body-bakgrunnen */
+    pointer-events: none; /* Sikrer at de ikke blokkerer klikk */
+    text-shadow: 0 0 5px rgba(0,0,0,0.1); /* Liten skygge for å skille dem ut */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Klasse for elementer som ikke skal rotere */
+.no-rotate {
+    animation: fallingNoRotate var(--animation-duration) linear infinite !important;
+}
+
+/* Styling for bilder i fallende elementer */
+.falling-banana img {
+    background: transparent !important;
+    opacity: 0.7;
+    object-fit: contain;
+    /* Størrelse settes dynamisk av JavaScript basert på originalbildets dimensjoner */
+}
+
+#fallingBananasContainer {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Statisk logo limt fast i øvre venstre hjørne - Matchende grønt design */
+.static-logo-corner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 168px; /* 30% mindre fra 240px */
+    height: auto;
+    background: linear-gradient(135deg, 
+        rgba(111, 194, 180, 0.95) 0%, 
+        rgba(52, 126, 132, 0.95) 100%
+    );
+    padding: 12px 16px;
+    border-radius: 0 0 16px 0; /* Kun avrundet i nedre høyre hjørne */
+    box-shadow: 
+        0 4px 12px rgba(52, 126, 132, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: none;
+    border-left: none;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Subtil shimmer-animasjon i bakgrunnen - matchende stil */
+.static-logo-corner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 25%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.08) 75%,
+        transparent 100%
+    );
+    animation: wave 6s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: 0 0 16px 0;
+}
+
+@keyframes logoShimmer {
+    0% {
+        transform: translateX(-150%);
+    }
+    100% {
+        transform: translateX(150%);
+    }
+}
+
+.static-logo-corner:hover {
+    box-shadow: 
+        0 6px 20px rgba(52, 126, 132, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.static-logo-corner img {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* Hjelpeklasse for å skjule elementer */
+.hidden {
+    display: none !important;
+}
+
+/* Auto-reset popup */
+.auto-reset-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.popup-content {
+    background: linear-gradient(135deg, var(--hiof-hvit) 0%, var(--hiof-lys-varmgra) 100%);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    animation: slideDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 3px solid var(--hiof-aquabla);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popup-content h3 {
+    font-size: 28px;
+    color: var(--hiof-aquabla);
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.popup-content p {
+    font-size: 20px;
+    color: var(--hiof-sort);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.popup-content strong {
+    color: var(--hiof-aquabla);
+}
+
+.popup-btn {
+    background: linear-gradient(135deg, var(--hiof-sjogronn) 0%, var(--hiof-aquabla) 100%);
+    color: var(--hiof-hvit);
+    font-size: 20px;
+    font-weight: 700;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(111, 194, 180, 0.4);
+}
+
+.popup-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(111, 194, 180, 0.6);
+}
+
+.popup-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Error popup modal */
+.error-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.error-popup-content {
+    background: linear-gradient(135deg, var(--hiof-hvit) 0%, var(--hiof-lys-varmgra) 100%);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    animation: errorShake 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 4px solid var(--hiof-korall);
+}
+
+@keyframes errorShake {
+    0%, 100% {
+        transform: translateX(0) scale(0.95);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px) scale(1);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px) scale(1);
+    }
+}
+
+.error-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: errorIconPulse 1s ease-in-out infinite;
+}
+
+@keyframes errorIconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.error-popup-content h3 {
+    font-size: 28px;
+    color: var(--hiof-korall);
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.error-popup-content p {
+    font-size: 18px;
+    color: var(--hiof-sort);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.error-btn {
+    background: linear-gradient(135deg, var(--hiof-korall) 0%, #C17355 100%);
+    color: var(--hiof-hvit);
+    font-size: 20px;
+    font-weight: 700;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(215, 134, 105, 0.4);
+}
+
+.error-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(215, 134, 105, 0.6);
+}
+
+.error-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Highlight error field */
+.input-error {
+    border-color: var(--hiof-korall) !important;
+    box-shadow: 0 0 0 4px rgba(215, 134, 105, 0.3) !important;
+    animation: errorFieldShake 0.5s ease;
+}
+
+@keyframes errorFieldShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+/* --- Container for hele appen --- */
+#app-container {
+    width: 100%;
+    max-width: 800px; /* Satt til en behagelig maks bredde */
+    background-color: var(--hiof-hvit);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: visible; /* ✅ ENDRET: Fra hidden til visible for å vise pil utenfor */
+    position: relative; /* For z-index */
+    z-index: 10; /* Holder innholdet over fallende bananer */
+}
+
+.container {
+    padding-bottom: 10px; /* ✅ ENDRET: Redusert fra 20px til 10px for 1080p */
+    position: relative;
+    overflow: visible; /* ✅ NYTT: Tillater pil å vises utenfor */
+}
+
+/* --- Header styling med animasjoner --- */
+.header {
+    background-color: var(--hiof-aquabla);
+    color: var(--hiof-hvit);
+    padding: 12px 0; /* ✅ ENDRET: Redusert fra 20px til 12px for 1080p */
+    margin-bottom: 8px; /* ✅ ENDRET: Redusert fra 12px til 8px for 1080p */
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+}
+
+/* Animerte partikler i bakgrunnen */
+.header-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.25); /* Økt fra 0.15 for klarere */
+    border-radius: 50%;
+    animation: float 10s infinite ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+}
+
+.particle-logo {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    animation: counterRotate 10s infinite ease-in-out;
+}
+
+/* Counter-rotation for å holde logoen rett */
+@keyframes counterRotate {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(-180deg);
+    }
+}
+
+.particle:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    left: 3%; /* Flyttet 10% mer ut mot venstre kant */
+    animation-delay: 0s;
+    animation-duration: 8s;
+}
+
+.particle:nth-child(1) .particle-logo {
+    animation-duration: 8s;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    left: 89%; /* Flyttet 10% mer ut mot høyre kant */
+    animation-delay: 2s;
+    animation-duration: 10s;
+}
+
+.particle:nth-child(2) .particle-logo {
+    animation-duration: 10s;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(80vh) rotate(0deg); /* Start lavere */
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.5; /* Klarere */
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+        opacity: 0.7; /* Klarere */
+    }
+    90% {
+        opacity: 0.5; /* Klarere */
+    }
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10; /* Over boblene */
+}
+
+/* Logo container med glow-effekt */
+.logo-container {
+    position: relative;
+    display: inline-block;
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(111, 194, 180, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 3s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.8;
+    }
+}
+
+.logo {
+    height: 80px;
+    width: auto;
+    animation: logoFloat 4s ease-in-out infinite;
+    filter: brightness(0) invert(1);
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-5px) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-5px) rotate(2deg);
+    }
+}
+
+/* Animert tittel container */
+.title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    z-index: 10;
+}
+
+.animated-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px; /* ✅ ENDRET: Økt fra 3px til 5px for bedre balanse */
+}
+
+.title-line-1 {
+    font-size: 13px; /* ✅ ENDRET: Redusert fra 15px til 13px for 1080p */
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.9);
+    animation: fadeSlideIn 1s ease-out;
+}
+
+.title-line-2 {
+    font-size: 20px; /* ✅ ENDRET: Redusert fra 24px til 20px for 1080p */
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(
+        45deg,
+        #ffffff 0%,
+        #6FC2B4 25%,
+        #ffffff 50%,
+        #6FC2B4 75%,
+        #ffffff 100%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite, textGlow 2s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(111, 194, 180, 0.5);
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes textGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px rgba(111, 194, 180, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 20px rgba(111, 194, 180, 0.9));
+    }
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animert underline */
+.title-underline {
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #6FC2B4, transparent);
+    animation: expandLine 2s ease-out 0.5s forwards;
+    box-shadow: 0 0 10px rgba(111, 194, 180, 0.5);
+}
+
+@keyframes expandLine {
+    to {
+        width: 200px;
+    }
+}
+
+/* --- Informasjonstekst - Estetisk design --- */
+.info-text {
+    text-align: center;
+    margin: 6px 35px; /* ✅ ENDRET: Redusert fra 8px til 6px for 1080p */
+    padding: 10px 18px; /* ✅ ENDRET: Redusert fra 12px/20px til 10px/18px for 1080p */
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    box-shadow: 
+        0 3px 12px rgba(0, 0, 0, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(111, 194, 180, 0.2);
+}
+
+.info-text p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 6px; /* ✅ ENDRET: Redusert fra 8px til 6px for 1080p */
+    color: var(--hiof-sort);
+    font-weight: 500;
+}
+
+.info-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Highlight viktige ord */
+.info-text p strong {
+    color: var(--hiof-aquabla);
+    font-weight: 700;
+}
+
+/* ✅ NYTT: Markedsføringsinformasjon på hovedsiden */
+.marketing-info-box {
+    margin: 12px 35px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE4D0 100%);
+    border: 2px solid #D78669;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(215, 134, 105, 0.12);
+    position: relative;
+    z-index: 2;
+}
+
+.marketing-text {
+    flex: 1;
+}
+
+.marketing-text p {
+    margin: 0;
+    color: #23201F;
+    line-height: 1.4;
+    font-size: 14px;
+}
+
+.marketing-text p strong {
+    color: #D78669;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* --- Skjema og input-felt --- */
+.form-container {
+    padding: 0 35px;
+    margin-bottom: 10px; /* ✅ ENDRET: Redusert fra 20px til 10px for 1080p */
+    position: relative;
+    z-index: 2;
+}
+
+.form-inner {
+    border: 1px solid var(--hiof-varmgra);
+    border-radius: 8px;
+    padding: 12px; /* ✅ ENDRET: Redusert fra 15px til 12px for 1080p */
+    background-color: var(--hiof-lys-varmgra);
+    position: relative;
+    z-index: 2;
+}
+
+.form-row {
+    margin-bottom: 6px; /* ✅ ENDRET: Redusert fra 8px til 6px for 1080p */
+}
+
+.form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px; /* Redusert fra 8px */
+    color: var(--hiof-aquabla);
+    font-size: 18px; /* Økt fra 14px */
+}
+
+.form-row input {
+    width: 100%;
+    padding: 11px; /* Balansert padding */
+    border: 2px solid var(--hiof-varmgra);
+    border-radius: 8px;
+    font-size: 17px; /* Balansert størrelse */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-row input:focus {
+    outline: none;
+    border-color: var(--hiof-sjogronn);
+    box-shadow: 0 0 0 4px rgba(111, 194, 180, 0.3); /* Økt fra 3px */
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--hiof-aquabla);
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--hiof-varmgra);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--hiof-sjogronn);
+    box-shadow: 0 0 0 3px rgba(111, 194, 180, 0.3); /* Sjogrønn fokusring */
+}
+
+/* Statusmelding for validering */
+#status-melding {
+    text-align: center;
+    font-size: 14px; /* Redusert fra 16px */
+    margin: 5px 20px; /* Redusert fra 10px 40px */
+    min-height: 15px; /* Redusert fra 20px */
+    font-weight: 600;
+    padding: 8px; /* Redusert fra 10px */
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#status-melding.error {
+    color: var(--hiof-hvit);
+    background-color: var(--hiof-korall);
+    box-shadow: 0 4px 12px rgba(215, 134, 105, 0.3);
+}
+
+#status-melding.success {
+    color: var(--hiof-hvit);
+    background-color: var(--hiof-sjogronn);
+    box-shadow: 0 4px 12px rgba(111, 194, 180, 0.3);
+}
+
+/* Informasjonsboks - Glassmorphism Design med Subtil Animasjon */
+.info-box-container {
+    backdrop-filter: blur(10px);
+    padding: 8px 18px; /* ✅ ENDRET: Redusert fra 10px/20px til 8px/18px for 1080p */
+    border-radius: 24px;
+    margin: 4px 35px; /* ✅ ENDRET: Redusert fra 6px til 4px for 1080p */
+    text-align: center;
+    box-shadow: 
+        0 8px 32px rgba(52, 126, 132, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ✅ NYTT: Primary variant (grønn - standard) */
+.info-box-primary {
+    background: linear-gradient(135deg, 
+        rgba(111, 194, 180, 0.95) 0%, 
+        rgba(52, 126, 132, 0.95) 100%
+    );
+}
+
+/* ✅ NYTT: Secondary variant (oransje/gul - viktig info) */
+.info-box-secondary {
+    background: linear-gradient(135deg, 
+        rgba(215, 134, 105, 0.95) 0%, 
+        rgba(201, 111, 75, 0.95) 100%
+    );
+    box-shadow: 
+        0 8px 32px rgba(215, 134, 105, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Animert wave-effekt - subtil bevegelse */
+.info-box-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 25%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.08) 75%,
+        transparent 100%
+    );
+    animation: wave 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes wave {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Fjernet pulserende border - kun wave-animasjon */
+
+.info-title {
+    font-size: 16px; /* ✅ ENDRET: Redusert fra 18px til 16px for 1080p */
+    font-weight: 800;
+    color: var(--hiof-hvit);
+    margin: 0 0 6px 0; /* ✅ ENDRET: Redusert fra 8px til 6px for 1080p */
+    text-align: center;
+    position: relative;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.info-box-container p {
+    font-size: 15px; /* ✅ ENDRET: Økt fra 14px til 15px */
+    line-height: 1.6; /* ✅ ENDRET: Økt fra 1.4 til 1.6 for bedre lesbarhet */
+    color: var(--hiof-hvit);
+    margin: 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    max-width: 100%; /* ✅ NYTT: Sikrer at teksten ikke går utenfor */
+    word-wrap: break-word; /* ✅ NYTT: Bryter lange ord */
+}
+
+.info-box-container strong {
+    font-weight: 900;
+    color: var(--hiof-hvit);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ✅ NYTT: Sikre konsistent størrelse på strong-tags */
+.info-box-container p strong {
+    font-size: inherit; /* Arver størrelsen fra parent paragraph */
+}
+
+
+/* --- Start-knapp --- */
+.button-container {
+    text-align: center;
+    margin-top: 5px; /* ✅ ENDRET: Redusert fra 8px til 5px for 1080p */
+    padding: 0 35px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ✅ NYTT: Rød pil-indikator */
+.arrow-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+}
+
+/* Venstre pil */
+.arrow-left {
+    left: -80px; /* Plassert utenfor containeren til venstre */
+    animation: bounceArrowLeft 1s ease-in-out infinite;
+}
+
+/* Høyre pil */
+.arrow-right {
+    right: -80px; /* Plassert utenfor containeren til høyre */
+    animation: bounceArrowRight 1s ease-in-out infinite;
+}
+
+.arrow-line {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #E63946 0%, #FF6B6B 100%);
+    border-radius: 2px;
+    position: relative;
+}
+
+/* Venstre pilhode - peker mot høyre */
+.arrow-left .arrow-head {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid #E63946;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+/* Høyre pilhode - peker mot venstre */
+.arrow-right .arrow-head {
+    position: absolute;
+    left: -10px; /* ✅ ENDRET: left i stedet for right */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-right: 12px solid #E63946; /* ✅ ENDRET: border-right i stedet for border-left */
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+/* Høyre pil tekst (juster posisjon) */
+.arrow-right .arrow-text {
+    left: auto;
+    right: -70px;
+}
+
+.arrow-text {
+    position: absolute;
+    left: -70px;
+    top: -25px;
+    color: #E63946;
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: pulseText 1s ease-in-out infinite;
+}
+
+@keyframes bounceArrowLeft {
+    0%, 100% {
+        transform: translateY(-50%) translateX(0);
+    }
+    50% {
+        transform: translateY(-50%) translateX(10px);
+    }
+}
+
+@keyframes bounceArrowRight {
+    0%, 100% {
+        transform: translateY(-50%) translateX(0);
+    }
+    50% {
+        transform: translateY(-50%) translateX(-10px);
+    }
+}
+
+@keyframes pulseText {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+.btn-start {
+    background: linear-gradient(135deg, var(--hiof-korall) 0%, #C17355 100%); /* ✅ ENDRET: Gradient i stedet for flat farge */
+    color: var(--hiof-hvit);
+    font-size: 20px; /* ✅ ENDRET: Økt fra 17px til 20px */
+    font-weight: 800; /* ✅ ENDRET: Økt fra bold til 800 */
+    padding: 16px 40px; /* ✅ ENDRET: Økt fra 14px/35px til 16px/40px */
+    width: 100%;
+    border: none;
+    border-radius: 12px; /* ✅ ENDRET: Økt fra 8px til 12px */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px; /* ✅ NYTT: Letter spacing for bedre lesbarhet */
+    box-shadow: 0 6px 20px rgba(215, 134, 105, 0.5); /* ✅ ENDRET: Større skygge */
+    position: relative;
+    overflow: hidden;
+    animation: pulseButton 2s ease-in-out infinite; /* ✅ NYTT: Pulserende animasjon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space mellom tekst og indikator */
+}
+
+/* ✅ NYTT: Ready indikator styling */
+.ready-indicator {
+    font-size: 24px;
+    animation: bounceIn 0.5s ease-out, pulse 1.5s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ✅ NYTT: Pulserende animasjon for knappen */
+@keyframes pulseButton {
+    0%, 100% {
+        box-shadow: 0 6px 20px rgba(215, 134, 105, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(215, 134, 105, 0.7);
+        transform: scale(1.02);
+    }
+}
+
+.btn-start:hover {
+    background: linear-gradient(135deg, #C17355 0%, var(--hiof-korall) 100%); /* ✅ ENDRET: Reversert gradient */
+    box-shadow: 0 8px 25px rgba(215, 134, 105, 0.7);
+    transform: translateY(-2px) scale(1.02); /* ✅ ENDRET: Mer prominent hover-effekt */
+}
+
+.btn-start:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 15px rgba(215, 134, 105, 0.5);
+}
+
+/* --- GDPR Les Personvernerklæring knapp --- */
+.btn-gdpr-les {
+    background-color: var(--hiof-varmgra);
+    color: var(--hiof-sort);
+    font-size: 13px; /* ✅ ENDRET: Redusert fra 14px til 13px */
+    font-weight: 600;
+    padding: 8px 18px; /* ✅ ENDRET: Redusert fra 10px/20px til 8px/18px */
+    width: 100%;
+    border: 2px solid var(--hiof-sjogronn);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s, border-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-gdpr-les:hover {
+    background-color: var(--hiof-lys-varmgra);
+    border-color: var(--hiof-aquabla);
+    box-shadow: 0 3px 8px rgba(52, 126, 132, 0.3);
+}
+
+.btn-gdpr-les:active {
+    transform: scale(0.98);
+}
+
+
+/* --- Venteskjerm (Spill startet) --- */
+#vente-skjerm {
+    display: none;
+    padding-bottom: 20px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vente-content {
+    position: relative;
+    z-index: 2;
+    padding: 25px 30px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(236, 234, 229, 0.95) 100%
+    );
+    border-radius: 20px;
+    margin: 40px 40px 25px 40px; /* ✅ ENDRET: Tilbake til 40px top-margin */
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(111, 194, 180, 0.3);
+    animation: slideInFromLeft 0.8s ease-out;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Dekorativ topp-stripe */
+.vente-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, 
+        var(--hiof-sjogronn) 0%, 
+        var(--hiof-aquabla) 50%, 
+        var(--hiof-sjogronn) 100%
+    );
+    background-size: 200% 100%;
+    animation: gradientSlide 4s ease infinite;
+}
+
+@keyframes gradientSlide {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Info rows - Forbedret design */
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInFromRight 0.6s ease-out;
+    animation-fill-mode: backwards;
+    border: 2px solid rgba(111, 194, 180, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.info-row:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.info-row:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.info-row:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-row:hover {
+    background: rgba(111, 194, 180, 0.12);
+    border-color: var(--hiof-sjogronn);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(111, 194, 180, 0.25);
+}
+
+.info-row label {
+    flex-basis: 110px;
+    font-weight: 700;
+    color: var(--hiof-aquabla);
+    font-size: 17px;
+    position: relative;
+}
+
+/* Fjernet underline-animasjon */
+
+.info-row input {
+    flex-grow: 1;
+    padding: 12px 14px;
+    border: 2px solid rgba(111, 194, 180, 0.3);
+    border-radius: 10px;
+    font-size: 17px;
+    background-color: var(--hiof-hvit);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.info-row input:focus {
+    outline: none;
+    border-color: var(--hiof-sjogronn);
+    box-shadow: 0 0 0 4px rgba(111, 194, 180, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: scale(1.01);
+}
+
+/* Readonly input styling */
+.info-row input[readonly] {
+    background: linear-gradient(135deg, var(--hiof-lys-varmgra) 0%, rgba(236, 234, 229, 0.5) 100%);
+    border-color: var(--hiof-varmgra);
+    cursor: default;
+    color: var(--hiof-sort);
+}
+
+/* Editing mode styling - make it very clear */
+.info-row input.editing {
+    background: linear-gradient(135deg, #fff9e6 0%, #fffaf0 100%) !important;
+    border-color: var(--hiof-korall) !important;
+    border-width: 3px !important;
+    box-shadow: 0 0 0 4px rgba(215, 134, 105, 0.2), inset 0 2px 8px rgba(215, 134, 105, 0.1) !important;
+    animation: editingPulse 2s ease-in-out infinite;
+}
+
+@keyframes editingPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 4px rgba(215, 134, 105, 0.2), inset 0 2px 8px rgba(215, 134, 105, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(215, 134, 105, 0.3), inset 0 2px 8px rgba(215, 134, 105, 0.2);
+    }
+}
+
+/* Rediger button styling - Blue/Aqua color */
+.btn-edit {
+    background: linear-gradient(135deg, var(--hiof-aquabla) 0%, #2a6570 100%);
+    color: var(--hiof-hvit);
+    border: none;
+    padding: 13px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 110px;
+    box-shadow: 0 4px 12px rgba(52, 126, 132, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Lagre button styling - Green color */
+.btn-edit.saving {
+    background: linear-gradient(135deg, var(--hiof-sjogronn) 0%, #5aa89d 100%);
+    box-shadow: 0 4px 12px rgba(111, 194, 180, 0.4);
+}
+
+.btn-edit::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-edit:hover {
+    background: linear-gradient(135deg, #2a6570 0%, var(--hiof-aquabla) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(52, 126, 132, 0.4);
+}
+
+.btn-edit.saving:hover {
+    background: linear-gradient(135deg, #5aa89d 0%, var(--hiof-sjogronn) 100%);
+    box-shadow: 0 8px 20px rgba(111, 194, 180, 0.5);
+}
+
+.btn-edit:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 4px 12px rgba(52, 126, 132, 0.3);
+}
+
+.btn-edit.saving:active {
+    box-shadow: 0 4px 12px rgba(111, 194, 180, 0.4);
+}
+
+.rediger-status {
+    text-align: center;
+    font-size: 15px;
+    margin-top: 15px;
+    min-height: 25px;
+    font-weight: 500;
+}
+
+.rediger-status.error {
+    color: var(--hiof-korall);
+}
+
+.rediger-status.success {
+    color: var(--hiof-sjogronn);
+}
+
+/* Verification info tekst - Forbedret estetisk design */
+.verification-info {
+    text-align: center;
+    margin-top: 20px;
+    padding: 18px 25px;
+    background: linear-gradient(135deg, 
+        rgba(111, 194, 180, 0.18) 0%, 
+        rgba(52, 126, 132, 0.15) 100%
+    );
+    border-radius: 16px;
+    border: 2px solid rgba(111, 194, 180, 0.4);
+    box-shadow: 
+        0 4px 15px rgba(111, 194, 180, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    position: relative;
+    animation: fadeInScale 0.6s ease-out 0.5s backwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.verification-info p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--hiof-sort);
+    margin: 0 0 10px 0;
+    font-weight: 500;
+}
+
+.verification-info p:last-child {
+    margin-bottom: 0;
+}
+
+.verification-info strong {
+    color: var(--hiof-aquabla);
+    font-weight: 700;
+}
+
+.verification-action {
+    font-size: 15px !important;
+    color: #555 !important;
+    font-weight: 400 !important;
+    margin-top: 5px !important;
+}
+
+/* Melding container */
+.melding-container {
+    text-align: center;
+    margin: 40px 0 30px 0;
+    padding: 35px 25px;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, var(--hiof-sjogronn) 0%, var(--hiof-aquabla) 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(52, 126, 132, 0.3);
+    animation: scaleIn 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    overflow: hidden;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) rotate(-5deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.melding-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.success-text {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--hiof-hvit);
+    margin-bottom: 20px;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    /* Fjernet bounce animasjon */
+}
+
+.melding-container p {
+    font-size: 19px;
+    line-height: 1.7;
+    margin-top: 5px;
+    color: var(--hiof-hvit);
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Registrer-knapp */
+.btn-register {
+    background: linear-gradient(135deg, var(--hiof-aquabla) 0%, #2a6570 100%);
+    color: var(--hiof-hvit);
+    font-size: 26px;
+    font-weight: 700;
+    padding: 22px 90px;
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 8px 25px rgba(52, 126, 132, 0.4);
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 8px 25px rgba(52, 126, 132, 0.4);
+    }
+    50% {
+        box-shadow: 0 8px 35px rgba(52, 126, 132, 0.6);
+    }
+}
+
+.btn-register::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.7s;
+}
+
+.btn-register:hover::before {
+    left: 100%;
+}
+
+.btn-register:hover {
+    background: linear-gradient(135deg, #2a6570 0%, var(--hiof-aquabla) 100%);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(52, 126, 132, 0.6);
+}
+
+.btn-register:active {
+    transform: translateY(-2px) scale(0.99);
+    box-shadow: 0 6px 20px rgba(52, 126, 132, 0.4);
+}
+
+
+/* --- Resultatskjerm --- */
+#resultat-skjerm {
+    display: none; /* Skjules ved oppstart, vises via JS */
+}
+
+/* Trophy ikon - basis styling */
+.trophy-icon {
+    width: 120px !important;
+    height: 120px !important;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+/* Black trophy styling - tier 0, 1 */
+.trophy-icon.trophy-black,
+.trophy-icon.trophy-black svg {
+    color: #2C2C2C !important;
+}
+
+.trophy-icon.trophy-black svg path {
+    stroke: #2C2C2C !important;
+}
+
+.trophy-icon.trophy-black {
+    filter: drop-shadow(0 0 10px rgba(44, 44, 44, 0.5));
+}
+
+/* Bronze trophy styling - tier 2 */
+.trophy-icon.trophy-bronze,
+.trophy-icon.trophy-bronze svg {
+    color: #CD7F32 !important;
+}
+
+.trophy-icon.trophy-bronze svg path {
+    stroke: #CD7F32 !important;
+}
+
+.trophy-icon.trophy-bronze {
+    filter: drop-shadow(0 0 15px rgba(205, 127, 50, 0.6));
+}
+
+/* Silver trophy styling - tier 3 */
+.trophy-icon.trophy-silver,
+.trophy-icon.trophy-silver svg {
+    color: #C0C0C0 !important;
+}
+
+.trophy-icon.trophy-silver svg path {
+    stroke: #C0C0C0 !important;
+}
+
+.trophy-icon.trophy-silver {
+    filter: drop-shadow(0 0 18px rgba(192, 192, 192, 0.8));
+}
+
+/* Gold trophy styling - tier 4 */
+.trophy-icon.trophy-gold,
+.trophy-icon.trophy-gold svg {
+    color: #FFD700 !important;
+}
+
+.trophy-icon.trophy-gold svg path {
+    stroke: #FFD700 !important;
+}
+
+.trophy-icon.trophy-gold {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9));
+    animation: goldenPulse 2s ease-in-out infinite;
+}
+
+@keyframes goldenPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+        transform: scale(1.05);
+    }
+}
+
+#result-icon-container {
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+/* Fyrverkeri container - hele resultatskjermen */
+.fireworks-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%; /* Full høyde for å la partikler spre seg */
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Fyrverkeri partikkel - større og mer synlig */
+.firework {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    animation: fireworkExplode 1.6s ease-out forwards;
+}
+
+@keyframes fireworkExplode {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Fyrverkeri farger - Standard */
+.firework.color1 { background: #FF0000; box-shadow: 0 0 10px #FF0000; }
+.firework.color2 { background: #FF7F00; box-shadow: 0 0 10px #FF7F00; }
+.firework.color3 { background: #FFFF00; box-shadow: 0 0 10px #FFFF00; }
+.firework.color4 { background: #00FF00; box-shadow: 0 0 10px #00FF00; }
+.firework.color5 { background: #0000FF; box-shadow: 0 0 10px #0000FF; }
+.firework.color6 { background: #9400D3; box-shadow: 0 0 10px #9400D3; }
+
+/* Sort fyrverkeri farger (tier 0, 1) */
+.firework.black-color1 { background: #2C2C2C; box-shadow: 0 0 12px #2C2C2C; }
+.firework.black-color2 { background: #3A3A3A; box-shadow: 0 0 12px #3A3A3A; }
+.firework.black-color3 { background: #1F1F1F; box-shadow: 0 0 12px #1F1F1F; }
+
+/* Bronze fyrverkeri farger (tier 2) */
+.firework.bronze-color1 { background: #CD7F32; box-shadow: 0 0 15px #CD7F32; }
+.firework.bronze-color2 { background: #B8860B; box-shadow: 0 0 15px #B8860B; }
+.firework.bronze-color3 { background: #D2691E; box-shadow: 0 0 15px #D2691E; }
+
+/* Sølv fyrverkeri farger (3 nivåer) */
+.firework.silver-color1 { background: #C0C0C0; box-shadow: 0 0 18px #C0C0C0; }
+.firework.silver-color2 { background: #E8E8E8; box-shadow: 0 0 18px #E8E8E8; }
+.firework.silver-color3 { background: #A8A8A8; box-shadow: 0 0 18px #A8A8A8; }
+
+/* Gull fyrverkeri farger (4+ nivåer) */
+.firework.gold-color1 { background: #FFD700; box-shadow: 0 0 20px #FFD700; }
+.firework.gold-color2 { background: #FFA500; box-shadow: 0 0 20px #FFA500; }
+.firework.gold-color3 { background: #FFDF00; box-shadow: 0 0 20px #FFDF00; }
+
+.resultat-skjerm {
+    text-align: center;
+    padding: 40px 30px;
+    position: relative;
+    z-index: 2;
+    overflow: hidden; /* Viktig for å holde fyrverkeri innenfor */
+}
+
+.resultat-skjerm h2 {
+    font-size: 2.5rem; /* Økt fra 2rem */
+    color: var(--hiof-korall);
+    margin-bottom: 15px; /* Økt fra 10px */
+    font-weight: 700;
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+.resultat-skjerm p {
+    font-size: 1.3rem; /* Lagt til - større tekst for beskrivelser */
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+/* Medalje ved siden av tier */
+.tier-medal {
+    font-size: 2rem;
+    margin-left: 12px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: medalSpin 3s ease-in-out infinite;
+}
+
+@keyframes medalSpin {
+    0%, 100% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(180deg);
+    }
+}
+
+.score-display {
+    display: inline-block;
+    font-size: 4.5rem; /* Økt fra 3.5rem */
+    font-weight: 800;
+    color: var(--hiof-aquabla);
+    background-color: var(--hiof-lys-varmgra);
+    padding: 20px 40px; /* Økt fra 10px 25px */
+    border-radius: 12px; /* Økt fra 8px */
+    margin: 25px 0; /* Økt fra 20px 0 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 200px; /* Økt fra 150px */
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+.tier-text {
+    font-size: 1.4rem; /* Økt fra 1.2rem */
+    font-weight: 600;
+    color: var(--hiof-sjogronn);
+    margin-bottom: 30px;
+    min-height: 20px;
+    line-height: 1.5; /* Lagt til for bedre lesbarhet */
+    padding: 0 20px; /* Lagt til litt padding */
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+.auto-reset-text {
+    font-size: 18px;
+    color: var(--hiof-lavendel);
+    margin: 20px 0;
+    font-style: italic;
+    animation: fadeInOut 2s ease-in-out infinite;
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.auto-reset-text #countdown-seconds {
+    font-weight: 700;
+    color: var(--hiof-aquabla);
+    font-size: 20px;
+}
+
+.btn-ny-deltaker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--hiof-korall);
+    color: var(--hiof-hvit);
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    text-transform: uppercase;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(215, 134, 105, 0.4);
+    position: relative;
+    z-index: 10; /* Over fyrverkeri */
+}
+
+.btn-ny-deltaker:hover {
+    background-color: #C17355;
+    box-shadow: 0 6px 12px rgba(215, 134, 105, 0.6);
+}
+
+.btn-ny-deltaker:active {
+    transform: scale(0.98);
+}
+
+/* --- Laste-overlay (Loader) --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(var(--hiof-sort), 0.85); /* Mørk, semi-transparent bakgrunn */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--hiof-hvit);
+    text-align: center;
+    padding: 20px;
+}
+
+#loading-text {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid var(--hiof-sjogronn); /* Sjogrønn spinner */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Notifikasjoner (Pop-ups) --- */
+.notification-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: var(--hiof-sort);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform: translateX(0);
+    min-width: 250px;
+}
+
+.notification.success {
+    background-color: var(--hiof-sjogronn);
+    color: var(--hiof-hvit);
+}
+
+.notification.error {
+    background-color: var(--hiof-korall);
+    color: var(--hiof-hvit);
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.notification-icon {
+    margin-right: 10px;
+    /* Sikrer at Lucide-ikonene har riktig farge */
+    color: var(--hiof-hvit) !important; 
+    width: 20px;
+    height: 20px;
+}
+
+.notification-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* --- Responsiv design --- */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+        /* Justerer bakgrunnsanimasjonen for mindre skjermer */
+        background-size: 600% 600%;
+        animation: pulseBackground 40s ease infinite;
+    }
+
+    #app-container {
+        border-radius: 0; /* Fjern avrunding på mobil for fullskjermeffekt */
+        box-shadow: none;
+    }
+    
+    /* Statisk logo limt fast i hjørnet på mobil også */
+    .static-logo-corner {
+        width: 110px; /* 30% mindre, også skalert for mobil */
+        top: 0;
+        left: 0;
+        padding: 8px 12px;
+        border-radius: 0 0 12px 0;
+    }
+    
+    .static-logo-corner::before {
+        border-radius: 0 0 12px 0;
+    }
+
+    /* Header-justeringer for mobil */
+    .header {
+        padding: 30px 15px;
+    }
+
+    .header-content {
+        flex-direction: row;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    /* Logo-container justeringer */
+    .logo-container {
+        flex-shrink: 0;
+    }
+
+    .logo {
+        height: 50px;
+    }
+
+    .logo-glow {
+        width: 80px;
+        height: 80px;
+    }
+
+    /* Tittel justeringer */
+    .title-container {
+        flex-basis: 100%;
+        order: 3;
+    }
+
+    .title-line-1 {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    .title-line-2 {
+        font-size: 20px;
+        letter-spacing: 1px;
+    }
+
+    .title-underline {
+        animation: expandLine 2s ease-out 0.5s forwards;
+    }
+
+    @keyframes expandLine {
+        to {
+            width: 150px;
+        }
+    }
+
+    /* Partikler på mobil - færre og mindre */
+    .particle {
+        display: none;
+    }
+
+    /* Partikler på mobil - kun de to ytterste */
+    .particle:nth-child(1),
+    .particle:nth-child(2) {
+        display: block;
+        width: 50px;
+        height: 50px;
+    }
+
+    .particle:nth-child(1) {
+        width: 50px;
+        height: 50px;
+    }
+
+    .particle:nth-child(2) {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* Reduserer padding i containere */
+    .form-container, #vente-skjerm {
+        padding: 0 20px;
+    }
+
+    .form-inner, .venter-box {
+        padding: 15px; /* Redusert fra 20px */
+    }
+
+    /* Justerer input-felt og knapper */
+    .form-row label {
+        font-size: 16px; /* Holder det stort på mobil */
+        margin-bottom: 4px; /* Redusert spacing */
+    }
+    
+    .form-row {
+        margin-bottom: 12px; /* Redusert fra standard */
+    }
+    
+    .form-row input {
+        padding: 10px; /* Redusert fra 12px */
+    }
+
+    .form-row input,
+    .form-group input {
+        padding: 14px; /* Holder det stort på mobil */
+        font-size: 16px;
+    }
+    
+    .btn-start, .btn-register, .btn-ny-deltaker {
+        font-size: 16px;
+        padding: 12px 20px;
+    }
+    
+    /* Venteskjerm justeringer */
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+    }
+    
+    .info-row label {
+        flex-basis: auto;
+        width: 100%;
+        text-align: left;
+        font-size: 15px;
+    }
+
+    .info-row input {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    .btn-edit {
+        margin-top: 8px;
+        width: 100%;
+        font-size: 15px;
+    }
+    
+    .success-text {
+        font-size: 22px;
+    }
+    
+    .melding-container p {
+        font-size: 16px;
+    }
+    
+    .vente-content {
+        padding: 18px 20px;
+    }
+    
+    .verification-info {
+        padding: 15px 18px;
+        margin-top: 18px;
+    }
+    
+    .verification-info p {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+    }
+    
+    .verification-action {
+        font-size: 13px !important;
+    }
+
+    .score-display {
+        font-size: 3rem; /* Økt fra 2.5rem */
+        padding: 15px 30px; /* Lagt til for bedre proporsjoner */
+    }
+
+    .tier-text {
+        font-size: 1.1rem; /* Lagt til for bedre lesbarhet på mobil */
+    }
+
+    .resultat-skjerm h2 {
+        font-size: 2rem; /* Lagt til for bedre proporsjoner på mobil */
+    }
+    
+    .notification-area {
+        top: auto;
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        align-items: center;
+    }
+    
+    .notification {
+        width: 100%;
+        min-width: unset;
+        font-size: 12px;
+    }
+    
+    /* Info-box justeringer for mobil */
+    .info-box-container {
+        margin: 12px 20px; /* Redusert fra 20px 20px */
+        padding: 20px; /* Redusert fra 30px 25px */
+        border-radius: 20px;
+    }
+    
+    .info-title {
+        font-size: 21px;
+        margin-bottom: 10px; /* Redusert fra 18px */
+    }
+    
+    .info-text {
+        margin: 12px 20px;
+        padding: 18px 20px;
+    }
+    
+    .info-text p {
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+    
+    .button-container {
+        margin-top: 12px; /* Redusert spacing */
+    }
+    
+    .info-box-container p {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+    
+    .info-box-container strong {
+        font-size: 1.1em; /* Relativ størrelse som i desktop */
+    }
+}
+
+
+/* ============================================
+   GDPR POPUP STYLING
+   ============================================ */
+
+.gdpr-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gdpr-popup.hidden {
+    display: none;
+}
+
+.gdpr-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.gdpr-popup-content {
+    position: relative;
+    background: #FFFFFF;
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    animation: gdprSlideIn 0.4s ease-out;
+}
+
+@keyframes gdprSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.gdpr-header {
+    background: #347E84;
+    color: #FFFFFF;
+    padding: 25px 30px;
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+}
+
+.gdpr-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.gdpr-body {
+    padding: 30px;
+    overflow-y: auto;
+    max-height: calc(85vh - 250px);
+}
+
+.gdpr-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.gdpr-body::-webkit-scrollbar-track {
+    background: #ECEAE5;
+    border-radius: 10px;
+}
+
+.gdpr-body::-webkit-scrollbar-thumb {
+    background: #6FC2B4;
+    border-radius: 10px;
+}
+
+.gdpr-body::-webkit-scrollbar-thumb:hover {
+    background: #347E84;
+}
+
+.gdpr-section {
+    margin-bottom: 25px;
+}
+
+.gdpr-section h3 {
+    color: #347E84;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.gdpr-section p {
+    color: #23201F;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 5px 0;
+}
+
+.gdpr-section ul {
+    margin: 10px 0;
+    padding-left: 25px;
+}
+
+.gdpr-section ul li {
+    color: #23201F;
+    font-size: 15px;
+    line-height: 1.8;
+    margin: 5px 0;
+}
+
+/* ✅ NYTT: Styling for markedsførings-advarsel (øverst i GDPR) */
+.gdpr-marketing-notice {
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE4D0 100%);
+    border: 3px solid #D78669;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(215, 134, 105, 0.2);
+}
+
+.gdpr-marketing-notice h3 {
+    color: #D78669 !important;
+    font-size: 20px !important;
+    margin-bottom: 15px;
+}
+
+.gdpr-marketing-notice p {
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* ✅ NYTT: Styling for markedsføringsseksjon */
+.gdpr-marketing-section {
+    background: #F5F9F9;
+    border-left: 4px solid #6FC2B4;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.gdpr-marketing-section h3 {
+    color: #6FC2B4 !important;
+}
+
+.gdpr-consent {
+    background: #ECEAE5;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 2px solid #C8C2BE;
+}
+
+.gdpr-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #23201F;
+}
+
+.gdpr-checkbox-label input[type="checkbox"],
+.gdpr-checkbox-label input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    margin-top: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.gdpr-checkbox-label span {
+    line-height: 1.6;
+}
+
+.gdpr-footer {
+    padding: 20px 30px;
+    background: #ECEAE5;
+    border-radius: 0 0 20px 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.gdpr-btn {
+    flex: 1;
+    padding: 18px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gdpr-btn-godkjenn {
+    background: #6FC2B4;
+    color: #FFFFFF;
+}
+
+.gdpr-btn-godkjenn:hover {
+    background: #347E84;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(111, 194, 180, 0.4);
+}
+
+.gdpr-btn-avbryt {
+    background: #D78669;
+    color: #FFFFFF;
+}
+
+.gdpr-btn-avbryt:hover {
+    background: #B86857;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(215, 134, 105, 0.4);
+}
+
+/* Mobil responsivitet */
+@media (max-width: 768px) {
+    .gdpr-popup-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .gdpr-header h2 {
+        font-size: 20px;
+    }
+    
+    .gdpr-body {
+        padding: 20px;
+        max-height: calc(90vh - 220px);
+    }
+    
+    .gdpr-section h3 {
+        font-size: 16px;
+    }
+    
+    .gdpr-section p,
+    .gdpr-section ul li {
+        font-size: 14px;
+    }
+    
+    .gdpr-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .gdpr-btn {
+        font-size: 14px;
+        padding: 15px 20px;
+    }
+    
+    .gdpr-checkbox-label {
+        font-size: 14px;
+    }
+    
+    .gdpr-checkbox-label input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ============================================
+   ALDERSBEKREFTELSE STYLING (GDPR Art. 8)
+   ============================================ */
+
+.age-confirmation {
+    background: #ECEAE5;
+    padding: 12px 15px; /* ✅ ENDRET: Redusert fra 14px/18px til 12px/15px */
+    border-radius: 12px;
+    margin-top: 5px;
+    border: 2px solid #6FC2B4;
+}
+
+.age-checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 15px; /* Balansert størrelse */
+    font-weight: bold;
+    color: #23201F;
+    margin-bottom: 8px; /* Balansert spacing */
+}
+
+.age-checkbox-label input[type="checkbox"] {
+    width: 22px; /* Balansert størrelse */
+    height: 22px;
+    margin-right: 12px; /* Balansert spacing */
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: #6FC2B4;
+}
+
+.age-checkbox-label span {
+    line-height: 1.4;
+}
+
+.age-info-text {
+    font-size: 12px; /* ✅ ENDRET: Redusert fra 13px til 12px */
+    color: #23201F;
+    margin: 0;
+    padding-left: 30px; /* ✅ ENDRET: Redusert fra 34px til 30px */
+    line-height: 1.4; /* ✅ ENDRET: Redusert fra 1.5 til 1.4 */
+    font-style: italic;
+}
+
+/* Highlight når ikke huket av */
+.age-confirmation.error {
+    border-color: #D78669;
+    background: #ffe6e0;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Mobil responsivitet */
+@media (max-width: 768px) {
+    .age-checkbox-label {
+        font-size: 13px; /* Enda mindre på mobil */
+    }
+    
+    .age-checkbox-label input[type="checkbox"] {
+        width: 18px; /* Mindre på mobil */
+        height: 18px;
+        margin-right: 8px;
+    }
+    
+    .age-info-text {
+        font-size: 11px; /* Mindre på mobil */
+        padding-left: 26px;
+    }
+}

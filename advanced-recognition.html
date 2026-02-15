@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MimikkMester - Din digitale tvilling</title>
+    <style>
+        /* HiØF Fargepalett */
+        :root {
+            --hiof-sort: #23201F;
+            --hiof-korall: #D77869;
+            --hiof-sjogronn: #6FC2B4;
+            --hiof-lys-varmgra: #ECEAE5;
+            --hiof-lavendel: #A3A5A3;
+            --hiof-aquabla: #347E84;
+            --hiof-varmgra: #C8C2BE;
+            --hiof-hvit: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--hiof-lys-varmgra) 0%, var(--hiof-varmgra) 50%, var(--hiof-lys-varmgra) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 30s ease infinite;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--hiof-hvit);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(35, 32, 31, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--hiof-sort);
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+        
+        /* Ny styling for knappene - alle på rad i toppen */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--hiof-lys-varmgra);
+            border-radius: 15px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        button {
+            background: var(--hiof-korall);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(215, 120, 105, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        button.avatar-toggle {
+            background: var(--hiof-aquabla);
+        }
+        
+        button.avatar-toggle.active {
+            background: var(--hiof-aquabla);
+        }
+        
+        /* Toggle buttons - PÅ state */
+        button.toggle-btn.active {
+            background: var(--hiof-sjogronn);
+        }
+        
+        /* Toggle buttons - AV state */
+        button.toggle-btn {
+            background: var(--hiof-korall);
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            background: var(--hiof-lys-varmgra);
+            color: var(--hiof-sort);
+            border: 2px solid var(--hiof-varmgra);
+            font-size: 0.95em;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 15px;
+        }
+        
+        .video-section {
+            position: relative;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #000;
+        }
+        
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+            transform: scaleX(-1) !important;
+            -webkit-transform: scaleX(-1) !important;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1) !important;
+            -webkit-transform: scaleX(-1) !important;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .people-list {
+            background: var(--hiof-lys-varmgra);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 2px solid var(--hiof-varmgra);
+        }
+        
+        .people-list h3 {
+            color: var(--hiof-aquabla);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .person-card {
+            background: var(--hiof-hvit);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 10px rgba(35, 32, 31, 0.1);
+            border: 1px solid var(--hiof-varmgra);
+        }
+        
+        .person-card .name {
+            font-weight: bold;
+            color: var(--hiof-aquabla);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .person-card .emoji {
+            font-size: 1.8em;
+            margin: 8px 0;
+        }
+        
+        .person-card .expression {
+            color: var(--hiof-sort);
+            font-size: 0.9em;
+        }
+        
+        .person-card .hand-gesture {
+            margin-top: 8px;
+            padding: 8px;
+            background: var(--hiof-sjogronn);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .hand-gesture .gesture-emoji {
+            font-size: 1.5em;
+        }
+        
+        .avatar-section {
+            background: var(--hiof-lys-varmgra);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: background-color 0.5s ease;
+            border: 3px solid var(--hiof-aquabla);
+            box-shadow: 0 5px 20px rgba(52, 126, 132, 0.3);
+        }
+        
+        .avatar-section h3 {
+            color: var(--hiof-aquabla);
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+        
+        #avatarCanvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: scaleX(1);
+            transition: background-color 0.5s ease;
+            border: 2px solid var(--hiof-varmgra);
+        }
+        
+        .avatar-section p {
+            color: var(--hiof-sort);
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .info-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .info-box {
+            background: var(--hiof-lys-varmgra);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid var(--hiof-sjogronn);
+        }
+        
+        .info-box h4 {
+            color: var(--hiof-aquabla);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .info-box .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--hiof-sort);
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* ===== BAKGRUNNSANIMASJON: FALLENDE EMOJIER ===== */
+        @keyframes fallingAnimation {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fallingNoRotate {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+        
+        #fallingContainer {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -2; /* BAK alt innhold */
+        }
+        
+        .falling-item {
+            position: fixed;
+            top: 0;
+            left: var(--start-left);
+            font-size: var(--item-size);
+            animation: fallingAnimation var(--animation-duration) linear infinite;
+            animation-delay: var(--animation-delay);
+            z-index: -1; /* BAK containeren */
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .no-rotate {
+            animation: fallingNoRotate var(--animation-duration) linear infinite !important;
+        }
+        
+        .falling-item img {
+            background: transparent !important;
+            opacity: 0.7;
+            object-fit: contain;
+        }
+        
+        /* Sørg for at containeren er OVER bakgrunnsanimasjonen */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* HiØF Logo i øvre venstre hjørne */
+        .hiof-logo {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 150px;
+            height: auto;
+            z-index: 2;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border: 3px solid white;
+            border-radius: 8px;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .hiof-logo:hover {
+            opacity: 1;
+        }
+        
+        /* Tilbake til original h1 design */
+        h1 {
+            color: var(--hiof-aquabla);
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 .emoji-mirror {
+            display: inline-block;
+            transform: scaleX(-1);
+        }
+        
+        /* Countdown timer i nedre høyre hjørne */
+        .countdown-timer {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--hiof-aquabla) 0%, var(--hiof-sjogronn) 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .countdown-timer .timer-icon {
+            font-size: 1.1em;
+        }
+        
+        .countdown-timer .timer-text {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Credits section */
+        .credits {
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            border-top: 2px solid var(--hiof-lys-varmgra);
+            color: var(--hiof-sort);
+            font-size: 0.85em;
+        }
+        
+        .credits .creator-label {
+            color: var(--hiof-lavendel);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .credits .creator-name {
+            font-weight: 700;
+            color: var(--hiof-aquabla);
+            font-size: 1.05em;
+            margin-bottom: 3px;
+        }
+        
+        .credits .creator-title {
+            color: var(--hiof-sort);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fallende emojier/bilder container -->
+    <div id="fallingContainer"></div>
+    
+    <div class="container">
+        <!-- HiØF Logo -->
+        <img src="web/static/images/hiof_logo.png" alt="Høgskolen i Østfold" class="hiof-logo">
+        
+        <!-- Countdown Timer -->
+        <div class="countdown-timer">
+            <span class="timer-icon">🔄</span>
+            <span class="timer-text" id="countdownText">03:00</span>
+        </div>
+        
+        <h1>🎭 MimikkMester - Din digitale tvilling <span class="emoji-mirror">🎭</span></h1>
+        <p class="subtitle">
+            Ansiktsgjenkjenning • Uttrykksdeteksjon • Håndbevegelser • Kroppssporing
+        </p>
+        
+        <div class="controls">
+            <button id="startBtn" onclick="startDetection()" disabled>Start Kamera</button>
+            <button id="stopBtn" onclick="stopDetection()" disabled>Stopp Kamera</button>
+            <button id="avatarBtn" class="avatar-toggle" onclick="toggleAvatar()">Vis Avatar</button>
+            <button id="faceTrackBtn" onclick="toggleFaceTracking()" class="toggle-btn active">
+                😊 Ansikt: PÅ
+            </button>
+            <button id="handTrackBtn" onclick="toggleHandTracking()" class="toggle-btn active">
+                ✋ Hender: PÅ
+            </button>
+            <button id="bodyTrackBtn" onclick="toggleBodyTrackingVisual()" class="toggle-btn">
+                🧍 Kropp: AV
+            </button>
+        </div>
+        
+        <div class="status" id="status">Laster AI-modeller...</div>
+        
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline muted></video>
+                    <canvas id="canvas"></canvas>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-box">
+                        <h4>👤 Personer Oppdaget</h4>
+                        <div class="value" id="peopleCount">0</div>
+                    </div>
+                    <div class="info-box">
+                        <h4>✋ Hender Oppdaget</h4>
+                        <div class="value" id="handsCount">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="people-list">
+                    <h3>👤 Oppdaget Person</h3>
+                    <div id="peopleList">
+                        <p style="color: #999; text-align: center;">Ingen person oppdaget ennå...</p>
+                    </div>
+                </div>
+                
+                <div class="avatar-section" id="avatarSection" style="display: none;">
+                    <h3>🤖 Tegnefilmavatar</h3>
+                    <canvas id="avatarCanvas"></canvas>
+                    <p>
+                        Avataren speiler dine bevegelser
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Credits -->
+        <div class="credits">
+            <div class="creator-label">Laget av</div>
+            <div class="creator-name">Daniel Nilsen Johansen</div>
+            <div class="creator-title">Avdelingsingeniør i Generativ AI ved Høgskolen i Østfold</div>
+        </div>
+    </div>
+
+    <!-- Libraries -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    
+    <script>        // Globale variabler
+        let video, canvas, ctx, displaySize;
+        let isDetecting = false;
+        let detectedPeople = new Map();
+        let hands, pose;
+        let showAvatar = false;
+        let avatarCanvas, avatarCtx;
+        
+        // Animasjonsvariabler for blunking
+        let blinkTimer = 0;
+        let isBlinking = false;
+        let mouthAnimationPhase = 0;
+        let eyebrowWigglePhase = 0;
+        let bouncePhase = 0;
+        
+        // Uttrykksbaserte bakgrunnsfarger
+        const expressionBackgrounds = {
+            'happy': '#FFFACD',
+            'sad': '#B0C4DE',
+            'angry': '#FFB6C1',
+            'fearful': '#DDA0DD',
+            'disgusted': '#98FB98',
+            'surprised': '#E6E6FA',
+            'neutral': '#F0F8FF'
+        };
+        
+        // Sporingsdata lagring
+        let latestFaceDetections = null;
+        let latestHandData = null;
+        let latestPoseData = null;
+        
+        // Glattende variabler for avatar
+        let smoothedHeadX = null;
+        let smoothedHeadY = null;
+        const SMOOTHING_FACTOR = 0.3;
+        
+        // Toggle variabler
+        let faceTrackingEnabled = true;
+        let handTrackingEnabled = true;
+        let bodyTrackingVisualEnabled = false;
+        
+        // Ytelsesoptimalisering: Bildehoppering
+        let frameCount = 0;
+        const FACE_DETECTION_INTERVAL = 3;
+        let lastRenderTime = 0;
+        const TARGET_FPS = 60;
+        const FRAME_TIME = 1000 / TARGET_FPS;
+        
+        // Statusoppdatering
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+        
+        // Last inn ansiktsgjenkjenningsmodeller
+        async function loadModels() {
+            try {
+                updateStatus('Laster ansiktsgjenkjenningsmodeller...');
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                
+                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+                
+                updateStatus('✅ Modeller lastet! Klikk "Start Kamera"');
+                document.getElementById('startBtn').disabled = false;
+            } catch (error) {
+                console.error('Feil ved lasting av modeller:', error);
+                updateStatus('❌ Feil ved lasting av modeller. Vennligst oppdater siden.');
+            }
+        }
+        
+        // Initialiser håndsporing
+        async function initHandTracking() {
+            hands = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+            
+            hands.setOptions({
+                maxNumHands: 2,
+                modelComplexity: 0,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+            
+            hands.onResults(onHandsResults);
+        }
+        
+        // Initialiser kroppssporing
+        async function initBodyTracking() {
+            pose = new Pose({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                }
+            });
+            
+            pose.setOptions({
+                modelComplexity: 0,
+                smoothLandmarks: true,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+            
+            pose.onResults(onPoseResults);
+            return pose;
+        }
+        
+        // Lagre pose-data
+        function onPoseResults(results) {
+            if (results.poseLandmarks) {
+                latestPoseData = results.poseLandmarks;
+            } else {
+                latestPoseData = null;
+            }
+        }
+        
+        // Tegn kroppssporing på canvas
+        function drawBodyTracking(landmarks) {
+            if (!bodyTrackingVisualEnabled) return;
+            
+            ctx.save();
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 4;
+            
+            const connections = [
+                [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
+                [11, 23], [12, 24], [23, 24],
+                [23, 25], [25, 27], [24, 26], [26, 28]
+            ];
+            
+            connections.forEach(([start, end]) => {
+                const startPoint = landmarks[start];
+                const endPoint = landmarks[end];
+                
+                if (startPoint && endPoint && 
+                    startPoint.visibility > 0.5 && endPoint.visibility > 0.5) {
+                    ctx.beginPath();
+                    ctx.moveTo(startPoint.x * canvas.width, startPoint.y * canvas.height);
+                    ctx.lineTo(endPoint.x * canvas.width, endPoint.y * canvas.height);
+                    ctx.stroke();
+                }
+            });
+            
+            // Tegn nakke
+            const leftShoulder = landmarks[11];
+            const rightShoulder = landmarks[12];
+            
+            if (leftShoulder && rightShoulder &&
+                leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5 &&
+                latestFaceDetections && latestFaceDetections.length > 0) {
+                
+                const faceBox = latestFaceDetections[0].detection.box;
+                
+                const neckStartX = faceBox.x + faceBox.width / 2;
+                const neckStartY = faceBox.y + faceBox.height;
+                const neckEndX = ((leftShoulder.x + rightShoulder.x) / 2) * canvas.width;
+                const neckEndY = ((leftShoulder.y + rightShoulder.y) / 2) * canvas.height;
+                
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(neckStartX, neckStartY);
+                ctx.quadraticCurveTo(
+                    (neckStartX + neckEndX) / 2,
+                    (neckStartY + neckEndY) / 2 - 10,
+                    neckEndX, neckEndY
+                );
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+        
+        // Lagre hånddata
+        function onHandsResults(results) {
+            if (!handTrackingEnabled) {
+                document.getElementById('handsCount').textContent = '0';
+                latestHandData = null;
+                return;
+            }
+            
+            document.getElementById('handsCount').textContent = results.multiHandLandmarks ? results.multiHandLandmarks.length : 0;
+            
+            if (results.multiHandLandmarks) {
+                const newGestures = new Map();
+                
+                for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+                    const landmarks = results.multiHandLandmarks[i];
+                    const rawHandedness = results.multiHandedness[i].label;
+                    const handedness = rawHandedness === 'Left' ? 'Høyre' : 'Venstre';
+                    const gesture = detectGesture(landmarks);
+                    
+                    newGestures.set(handedness, {
+                        gesture: gesture,
+                        landmarks: landmarks
+                    });
+                }
+                
+                latestHandData = newGestures;
+            } else {
+                latestHandData = null;
+            }
+        }
+        
+        // Gjenkjenn håndbevegelse (forbedret algoritme)
+        function detectGesture(landmarks) {
+            const thumbTip = landmarks[4];
+            const indexTip = landmarks[8];
+            const middleTip = landmarks[12];
+            const ringTip = landmarks[16];
+            const pinkyTip = landmarks[20];
+            
+            const thumbMcp = landmarks[2];
+            const indexMcp = landmarks[5];
+            const middleMcp = landmarks[9];
+            const ringMcp = landmarks[13];
+            const pinkyMcp = landmarks[17];
+            const palmBase = landmarks[0];
+            
+            // Forbedret funksjon som sjekker både Y-posisjon OG avstand
+            function isFingerExtended(tip, mcp, palmBase) {
+                const tipToPalm = Math.sqrt(
+                    Math.pow(tip.x - palmBase.x, 2) + 
+                    Math.pow(tip.y - palmBase.y, 2) + 
+                    Math.pow(tip.z - palmBase.z, 2)
+                );
+                const mcpToPalm = Math.sqrt(
+                    Math.pow(mcp.x - palmBase.x, 2) + 
+                    Math.pow(mcp.y - palmBase.y, 2) + 
+                    Math.pow(mcp.z - palmBase.z, 2)
+                );
+                // Fingeren er utstrakt hvis tippen er lengre fra håndflaten enn MCP-leddet
+                return tipToPalm > mcpToPalm * 1.3;
+            }
+            
+            // Forbedret tommelfinger sjekk
+            function isThumbExtended(thumbTip, thumbMcp, palmBase) {
+                const distance = Math.sqrt(
+                    Math.pow(thumbTip.x - palmBase.x, 2) + 
+                    Math.pow(thumbTip.y - palmBase.y, 2) + 
+                    Math.pow(thumbTip.z - palmBase.z, 2)
+                );
+                const mcpDistance = Math.sqrt(
+                    Math.pow(thumbMcp.x - palmBase.x, 2) + 
+                    Math.pow(thumbMcp.y - palmBase.y, 2) + 
+                    Math.pow(thumbMcp.z - palmBase.z, 2)
+                );
+                return distance > mcpDistance * 1.5;
+            }
+            
+            const indexUp = isFingerExtended(indexTip, indexMcp, palmBase);
+            const middleUp = isFingerExtended(middleTip, middleMcp, palmBase);
+            const ringUp = isFingerExtended(ringTip, ringMcp, palmBase);
+            const pinkyUp = isFingerExtended(pinkyTip, pinkyMcp, palmBase);
+            const thumbOut = isThumbExtended(thumbTip, thumbMcp, palmBase);
+            
+            // STEIN - alle fingre lukket (ikke utstrakt)
+            if (!indexUp && !middleUp && !ringUp && !pinkyUp) {
+                return { name: 'Stein', emoji: '✊' };
+            }
+            
+            // PAPIR - alle fingre (inkl tommel) utstrakt
+            if (indexUp && middleUp && ringUp && pinkyUp && thumbOut) {
+                return { name: 'Papir', emoji: '✋' };
+            }
+            
+            // Alternativ PAPIR sjekk - hvis 4 fingre er oppe (selv uten tommel helt ut)
+            if (indexUp && middleUp && ringUp && pinkyUp) {
+                return { name: 'Papir', emoji: '✋' };
+            }
+            
+            if (indexUp && middleUp && !ringUp && !pinkyUp) {
+                return { name: 'Saks', emoji: '✌️' };
+            }
+            
+            if (thumbOut && !indexUp && !middleUp && !ringUp && !pinkyUp) {
+                return { name: 'Tommel opp', emoji: '👍' };
+            }
+            
+            const distance = Math.sqrt(
+                Math.pow(thumbTip.x - indexTip.x, 2) + 
+                Math.pow(thumbTip.y - indexTip.y, 2)
+            );
+            if (distance < 0.05 && middleUp && ringUp && pinkyUp) {
+                return { name: 'OK', emoji: '👌' };
+            }
+            
+            if (indexUp && pinkyUp && !middleUp && !ringUp) {
+                return { name: 'Rock', emoji: '🤘' };
+            }
+            
+            if (indexUp && !middleUp && !ringUp && !pinkyUp) {
+                return { name: 'Peker', emoji: '☝️' };
+            }
+            
+            return { name: 'Ukjent', emoji: '🤚' };
+        }
+        
+        // Tegn hånd på hovedcanvas
+        function drawHand(landmarks) {
+            if (!handTrackingEnabled) return;
+            
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            ctx.save();
+            
+            ctx.strokeStyle = '#43e97b';
+            ctx.lineWidth = 3;
+            
+            const connections = [
+                [0,1],[1,2],[2,3],[3,4],
+                [0,5],[5,6],[6,7],[7,8],
+                [0,9],[9,10],[10,11],[11,12],
+                [0,13],[13,14],[14,15],[15,16],
+                [0,17],[17,18],[18,19],[19,20],
+                [5,9],[9,13],[13,17]
+            ];
+            
+            connections.forEach(([start, end]) => {
+                const startPoint = landmarks[start];
+                const endPoint = landmarks[end];
+                
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x * canvasWidth, startPoint.y * canvasHeight);
+                ctx.lineTo(endPoint.x * canvasWidth, endPoint.y * canvasHeight);
+                ctx.stroke();
+            });
+            
+            ctx.fillStyle = '#667eea';
+            landmarks.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x * canvasWidth, point.y * canvasHeight, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            ctx.restore();
+        }
+        
+        // Start deteksjon
+        async function startDetection() {
+            try {
+                video = document.getElementById('video');
+                canvas = document.getElementById('canvas');
+                ctx = canvas.getContext('2d');
+                avatarCanvas = document.getElementById('avatarCanvas');
+                avatarCtx = avatarCanvas.getContext('2d');
+                
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+                
+                video.srcObject = stream;
+                
+                await new Promise(resolve => {
+                    video.onloadedmetadata = () => resolve();
+                });
+                
+                displaySize = { width: video.videoWidth, height: video.videoHeight };
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                faceapi.matchDimensions(canvas, displaySize);
+                
+                const avatarWidth = 400;
+                const videoAspectRatio = video.videoHeight / video.videoWidth;
+                const avatarHeight = Math.round(avatarWidth * videoAspectRatio);
+                avatarCanvas.width = avatarWidth;
+                avatarCanvas.height = avatarHeight;
+                
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                isDetecting = true;
+                
+                await initHandTracking();
+                await initBodyTracking();
+                
+                async function processMediaPipe() {
+                    if (!isDetecting) return;
+                    
+                    if (handTrackingEnabled && hands) {
+                        await hands.send({image: video});
+                    }
+                    if ((showAvatar || bodyTrackingVisualEnabled) && pose) {
+                        await pose.send({image: video});
+                    }
+                    
+                    requestAnimationFrame(processMediaPipe);
+                }
+                processMediaPipe();
+                
+                updateStatus('✅ Deteksjon aktiv!');
+                
+                detectFaces();
+                
+            } catch (error) {
+                console.error('Feil:', error);
+                updateStatus('❌ Kameratilgang nektet.');
+            }
+        }
+        
+        // Hoveddeteksjonsløkke
+        async function detectFaces() {
+            if (!isDetecting) return;
+            
+            const currentTime = performance.now();
+            const deltaTime = currentTime - lastRenderTime;
+            
+            if (deltaTime < FRAME_TIME) {
+                requestAnimationFrame(detectFaces);
+                return;
+            }
+            
+            lastRenderTime = currentTime - (deltaTime % FRAME_TIME);
+            frameCount++;
+            
+            try {
+                if (faceTrackingEnabled && frameCount % FACE_DETECTION_INTERVAL === 0) {
+                    const detections = await faceapi
+                        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({
+                            inputSize: 416,
+                            scoreThreshold: 0.5
+                        }))
+                        .withFaceLandmarks()
+                        .withFaceExpressions();
+                    
+                    if (detections && detections.length > 0) {
+                        const firstDetection = detections[0];
+                        document.getElementById('peopleCount').textContent = '1';
+                        
+                        const resizedDetections = faceapi.resizeResults([firstDetection], displaySize);
+                        
+                        latestFaceDetections = resizedDetections;
+                        
+                        const detection = firstDetection;
+                        const box = detection.detection.box;
+                        const expressions = detection.expressions;
+                        
+                        let maxExpression = 'neutral';
+                        let maxValue = 0;
+                        for (const [exp, val] of Object.entries(expressions)) {
+                            if (val > maxValue) {
+                                maxValue = val;
+                                maxExpression = exp;
+                            }
+                        }
+                        
+                        const expressionNorwegian = {
+                            'happy': 'glad',
+                            'sad': 'trist',
+                            'angry': 'sint',
+                            'fearful': 'redd',
+                            'disgusted': 'avsky',
+                            'surprised': 'overrasket',
+                            'neutral': 'nøytral'
+                        };
+                        
+                        const emojiMap = {
+                            'happy': '😊',
+                            'sad': '😢',
+                            'angry': '😡',
+                            'fearful': '😱',
+                            'disgusted': '🤮',
+                            'surprised': '😮',
+                            'neutral': '😐'
+                        };
+                        const emoji = emojiMap[maxExpression] || '😐';
+                        
+                        const faceX = (box.x + box.width/2) / canvas.width;
+                        const faceY = (box.y + box.height/2) / canvas.height;
+                        
+                        detectedPeople.set(1, {
+                            id: 1,
+                            expression: expressionNorwegian[maxExpression] || maxExpression,
+                            emoji: emoji,
+                            confidence: (maxValue * 100).toFixed(0),
+                            faceX: faceX,
+                            faceY: faceY,
+                            lastSeen: Date.now()
+                        });
+                        
+                        if (frameCount % 10 === 0) {
+                            updatePeopleList();
+                        }
+                    } else {
+                        document.getElementById('peopleCount').textContent = '0';
+                        latestFaceDetections = null;
+                        detectedPeople.clear();
+                    }
+                }
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                
+                if (latestPoseData && bodyTrackingVisualEnabled) {
+                    drawBodyTracking(latestPoseData);
+                }
+                
+                if (latestHandData && handTrackingEnabled) {
+                    for (const [handedness, data] of latestHandData.entries()) {
+                        drawHand(data.landmarks);
+                    }
+                }
+                
+                if (latestFaceDetections && faceTrackingEnabled) {
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.lineWidth = 2;
+                    latestFaceDetections.forEach(detection => {
+                        const box = detection.detection.box;
+                        ctx.strokeRect(box.x, box.y, box.width, box.height);
+                    });
+                    faceapi.draw.drawFaceLandmarks(canvas, latestFaceDetections);
+                }
+                
+                ctx.restore();
+                
+                if (showAvatar) {
+                    drawAvatar();
+                }
+                
+            } catch (error) {
+                console.error('Deteksjonsfeil:', error);
+            }
+            
+            if (isDetecting) {
+                requestAnimationFrame(detectFaces);
+            }
+        }
+        
+        function updatePeopleList() {
+            const listEl = document.getElementById('peopleList');
+            
+            if (detectedPeople.size === 0) {
+                listEl.innerHTML = '<p style="color: #999; text-align: center;">Ingen person oppdaget ennå...</p>';
+                return;
+            }
+            
+            let html = '';
+            for (const [id, person] of detectedPeople.entries()) {
+                const handGestureHtml = latestHandData ? Array.from(latestHandData.entries())
+                    .map(([hand, data]) => {
+                        // Speilvend emojier for høyre hånd på spesifikke gesturer
+                        const shouldMirror = hand === 'Høyre' && 
+                            (data.gesture.name === 'Papir' || 
+                             data.gesture.name === 'Rock' || 
+                             data.gesture.name === 'Stein' ||
+                             data.gesture.name === 'Saks' ||
+                             data.gesture.name === 'Peker');
+                        const mirrorStyle = shouldMirror ? 'transform: scaleX(-1); display: inline-block;' : '';
+                        
+                        return `<div class="hand-gesture">
+                            <span class="gesture-emoji" style="${mirrorStyle}">${data.gesture.emoji}</span>
+                            <span>${hand}: ${data.gesture.name}</span>
+                        </div>`;
+                    }).join('') : '';
+                
+                html += `
+                    <div class="person-card">
+                        <div class="name">👤 Person ${id}</div>
+                        <div class="emoji">${person.emoji}</div>
+                        <div class="expression">
+                            Uttrykk: ${person.expression} (${person.confidence}%)
+                        </div>
+                        ${handGestureHtml}
+                    </div>
+                `;
+            }
+            
+            listEl.innerHTML = html;
+        }
+        
+        function toggleAvatar() {
+            showAvatar = !showAvatar;
+            const section = document.getElementById('avatarSection');
+            const btn = document.getElementById('avatarBtn');
+            
+            if (showAvatar) {
+                section.style.display = 'block';
+                btn.textContent = 'Skjul Avatar';
+                btn.classList.add('active');
+            } else {
+                section.style.display = 'none';
+                btn.textContent = 'Vis Avatar';
+                btn.classList.remove('active');
+            }
+        }        
+        // Tegnefilmavatar med blunking og bakgrunnsfarger
+        function drawAvatar() {
+            const w = avatarCanvas.width;
+            const h = avatarCanvas.height;
+            
+            blinkTimer++;
+            mouthAnimationPhase += 0.1;
+            eyebrowWigglePhase += 0.08;
+            bouncePhase += 0.05;
+            
+            if (blinkTimer > 300 && Math.random() < 0.01) {
+                isBlinking = true;
+                blinkTimer = 0;
+            }
+            if (isBlinking && blinkTimer > 15) {
+                isBlinking = false;
+            }
+            
+            const firstPerson = detectedPeople.size > 0 ? Array.from(detectedPeople.values())[0] : null;
+            const expression = firstPerson ? firstPerson.expression : 'nøytral';
+            
+            // Sett bakgrunnsfarge basert på uttrykk
+            const expressionMap = {
+                'glad': 'happy',
+                'trist': 'sad',
+                'sint': 'angry',
+                'redd': 'fearful',
+                'avsky': 'disgusted',
+                'overrasket': 'surprised',
+                'nøytral': 'neutral'
+            };
+            const expressionKey = expressionMap[expression] || 'neutral';
+            const bgColor = expressionBackgrounds[expressionKey] || '#F0F8FF';
+            avatarCanvas.style.backgroundColor = bgColor;
+            const avatarSection = document.getElementById('avatarSection');
+            if (avatarSection) {
+                avatarSection.style.backgroundColor = bgColor;
+            }
+            
+            avatarCtx.clearRect(0, 0, w, h);
+            
+            avatarCtx.lineCap = 'round';
+            avatarCtx.lineJoin = 'round';
+            
+            let headX = w/2;
+            let headY = 90;
+            
+            if (firstPerson && firstPerson.faceX !== undefined) {
+                headX = (1 - firstPerson.faceX) * w;
+                headY = firstPerson.faceY * h * 0.8;
+            }
+            
+            avatarCtx.save();
+            avatarCtx.translate(headX, headY);
+            avatarCtx.scale(1, 1);
+            
+            // Tegn ansikt basert på uttrykk
+            if (expression === 'glad' || expressionKey === 'happy') {
+                // Glad ansikt
+                avatarCtx.fillStyle = '#FDB777';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Glade øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.arc(-20, -10, 10, Math.PI * 1.2, Math.PI * 1.8);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.arc(20, -10, 10, Math.PI * 1.2, Math.PI * 1.8);
+                avatarCtx.stroke();
+                
+                // Glade øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 5;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, 0, 10, 0.2, Math.PI - 0.2);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, 0, 10, 0.2, Math.PI - 0.2);
+                    avatarCtx.stroke();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-30, 0);
+                    avatarCtx.lineTo(-10, 0);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(10, 0);
+                    avatarCtx.lineTo(30, 0);
+                    avatarCtx.stroke();
+                }
+                
+                // Stort smil
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 18, 24, 0.15, Math.PI - 0.15);
+                avatarCtx.stroke();
+                
+            } else if (expression === 'trist' || expressionKey === 'sad') {
+                // Trist ansikt
+                avatarCtx.fillStyle = '#FDB777';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Triste øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.arc(-28, -10, 12, Math.PI * 1.2, Math.PI * 1.8);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.arc(28, -10, 12, Math.PI * 1.2, Math.PI * 1.8);
+                avatarCtx.stroke();
+                
+                // Triste øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-28, 5, 13, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-28, 5, 5, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(28, 5, 13, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(28, 5, 5, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-38, 5);
+                    avatarCtx.lineTo(-18, 5);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(18, 5);
+                    avatarCtx.lineTo(38, 5);
+                    avatarCtx.stroke();
+                }
+                
+                // Tårer - animert
+                const tearOffset = Math.sin(mouthAnimationPhase) * 2;
+                avatarCtx.fillStyle = '#5DADE2';
+                avatarCtx.strokeStyle = '#2E86C1';
+                avatarCtx.lineWidth = 2;
+                avatarCtx.beginPath();
+                avatarCtx.ellipse(-28, 25 + tearOffset, 3, 10, 0, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                avatarCtx.fillStyle = '#5DADE2';
+                avatarCtx.strokeStyle = '#2E86C1';
+                avatarCtx.lineWidth = 2;
+                avatarCtx.beginPath();
+                avatarCtx.ellipse(28, 25 + tearOffset, 3, 10, 0, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Trist munn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 40, 16, 1.15 * Math.PI, 1.85 * Math.PI);
+                avatarCtx.stroke();
+                
+            } else if (expression === 'sint' || expressionKey === 'angry') {
+                // Sint rød ansikt
+                avatarCtx.fillStyle = '#FF6347';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Sinte øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 7;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-35, -15);
+                avatarCtx.lineTo(-10, 0);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(35, -15);
+                avatarCtx.lineTo(10, 0);
+                avatarCtx.stroke();
+                
+                // Sinte øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, 10, 10, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, 10, 4, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, 10, 10, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, 10, 4, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 5;
+                    avatarCtx.lineCap = 'round';
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-30, 10);
+                    avatarCtx.lineTo(-10, 10);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(10, 10);
+                    avatarCtx.lineTo(30, 10);
+                    avatarCtx.stroke();
+                }
+                
+                // Sint munn (samme som trist munn)
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 40, 16, 1.15 * Math.PI, 1.85 * Math.PI);
+                avatarCtx.stroke();
+                
+            } else if (expression === 'overrasket' || expressionKey === 'surprised') {
+                // Overrasket ansikt
+                avatarCtx.fillStyle = '#FDB777';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Høye øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.arc(-20, -20, 12, Math.PI, Math.PI * 2);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.arc(20, -20, 12, Math.PI, Math.PI * 2);
+                avatarCtx.stroke();
+                
+                // Store åpne øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, 2, 14, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, 2, 5, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, 2, 14, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.fillStyle = '#000000';
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, 2, 5, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 5;
+                    avatarCtx.lineCap = 'round';
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-32, 2);
+                    avatarCtx.lineTo(-8, 2);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(8, 2);
+                    avatarCtx.lineTo(32, 2);
+                    avatarCtx.stroke();
+                }
+                
+                // Åpen O-munn
+                avatarCtx.fillStyle = '#000000';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 35, 16, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+            } else if (expression === 'redd' || expressionKey === 'fearful') {
+                // Redd ansikt
+                avatarCtx.fillStyle = '#FDB777';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Mørkeblå fade på toppen
+                const blueGradient = avatarCtx.createLinearGradient(0, -60, 0, -15);
+                blueGradient.addColorStop(0, '#1E3A8A');
+                blueGradient.addColorStop(1, '#FDB777');
+                avatarCtx.fillStyle = blueGradient;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, Math.PI, Math.PI * 2, false);
+                avatarCtx.fill();
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.stroke();
+                
+                // Bekymrede øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 6;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-35, -25);
+                avatarCtx.quadraticCurveTo(-20, -38, -8, -28);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(35, -25);
+                avatarCtx.quadraticCurveTo(20, -38, 8, -28);
+                avatarCtx.stroke();
+                
+                // Store redde øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.fillStyle = '#FFFFFF';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(-20, -2, 20, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    avatarCtx.beginPath();
+                    avatarCtx.arc(20, -2, 20, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 5;
+                    avatarCtx.lineCap = 'round';
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-35, -2);
+                    avatarCtx.lineTo(-5, -2);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(5, -2);
+                    avatarCtx.lineTo(35, -2);
+                    avatarCtx.stroke();
+                }
+                
+                // Åpen munn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.fillStyle = '#8B0000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.ellipse(0, 35, 18, 20, 0, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Svettpedråper
+                avatarCtx.fillStyle = '#B0E0E6';
+                avatarCtx.strokeStyle = '#87CEEB';
+                avatarCtx.lineWidth = 2;
+                avatarCtx.beginPath();
+                avatarCtx.arc(-45, -5, 4, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-45, -1);
+                avatarCtx.lineTo(-47, 5);
+                avatarCtx.lineTo(-43, 5);
+                avatarCtx.closePath();
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+            } else if (expression === 'avsky' || expressionKey === 'disgusted') {
+                // Avsky ansikt
+                avatarCtx.fillStyle = '#9ACD32';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Avsky øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 6;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-32, -12);
+                avatarCtx.lineTo(-12, -5);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(32, -12);
+                avatarCtx.lineTo(12, -5);
+                avatarCtx.stroke();
+                
+                // X øyne (alltid synlige)
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-26, 2);
+                avatarCtx.lineTo(-14, 12);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-14, 2);
+                avatarCtx.lineTo(-26, 12);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(14, 2);
+                avatarCtx.lineTo(26, 12);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(26, 2);
+                avatarCtx.lineTo(14, 12);
+                avatarCtx.stroke();
+                
+                // Åpen munn
+                avatarCtx.fillStyle = '#000000';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 32, 12, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Tunge som stikker ut
+                avatarCtx.fillStyle = '#FF69B4';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 3;
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(0, 38);
+                avatarCtx.quadraticCurveTo(-8, 48, -2, 52);
+                avatarCtx.quadraticCurveTo(2, 50, 0, 38);
+                avatarCtx.closePath();
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+            } else {
+                // Nøytralt ansikt
+                avatarCtx.fillStyle = '#FDB777';
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.arc(0, 0, 60, 0, Math.PI * 2);
+                avatarCtx.fill();
+                avatarCtx.stroke();
+                
+                // Rette øyenbryn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 5;
+                avatarCtx.lineCap = 'round';
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-30, -12);
+                avatarCtx.lineTo(-10, -12);
+                avatarCtx.stroke();
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(10, -12);
+                avatarCtx.lineTo(30, -12);
+                avatarCtx.stroke();
+                
+                // Nøytrale øyne med blunking
+                if (!isBlinking) {
+                    avatarCtx.fillStyle = '#2C2416';
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 3;
+                    avatarCtx.beginPath();
+                    avatarCtx.ellipse(-20, 2, 6, 8, 0, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.ellipse(20, 2, 6, 8, 0, 0, Math.PI * 2);
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                } else {
+                    avatarCtx.strokeStyle = '#000000';
+                    avatarCtx.lineWidth = 4;
+                    avatarCtx.lineCap = 'round';
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(-26, 2);
+                    avatarCtx.lineTo(-14, 2);
+                    avatarCtx.stroke();
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(14, 2);
+                    avatarCtx.lineTo(26, 2);
+                    avatarCtx.stroke();
+                }
+                
+                // Nøytral munn
+                avatarCtx.strokeStyle = '#000000';
+                avatarCtx.lineWidth = 4;
+                avatarCtx.beginPath();
+                avatarCtx.moveTo(-18, 26);
+                avatarCtx.lineTo(18, 26);
+                avatarCtx.stroke();
+            }
+            
+            avatarCtx.restore();
+            
+            // Tegn kropp (må speile X-koordinater for riktig side)
+            if (latestPoseData) {
+                const leftShoulder = latestPoseData[11];
+                const rightShoulder = latestPoseData[12];
+                const leftHip = latestPoseData[23];
+                const rightHip = latestPoseData[24];
+                const leftElbow = latestPoseData[13];
+                const rightElbow = latestPoseData[14];
+                const leftWrist = latestPoseData[15];
+                const rightWrist = latestPoseData[16];
+                
+                if (leftShoulder && rightShoulder && leftHip && rightHip) {
+                    // SPEIL X-koordinater: (1 - x) * w for å kompensere for speilvendt video
+                    const lShoulderX = (1 - leftShoulder.x) * w;
+                    const lShoulderY = leftShoulder.y * h;
+                    const rShoulderX = (1 - rightShoulder.x) * w;
+                    const rShoulderY = rightShoulder.y * h;
+                    const lHipX = (1 - leftHip.x) * w;
+                    const lHipY = leftHip.y * h;
+                    const rHipX = (1 - rightHip.x) * w;
+                    const rHipY = rightHip.y * h;
+                    
+                    // Nakke
+                    avatarCtx.strokeStyle = '#000';
+                    avatarCtx.lineWidth = 3;
+                    avatarCtx.fillStyle = '#FDB777';
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(headX - 15, headY + 60);
+                    avatarCtx.lineTo(lShoulderX, lShoulderY);
+                    avatarCtx.lineTo(rShoulderX, rShoulderY);
+                    avatarCtx.lineTo(headX + 15, headY + 60);
+                    avatarCtx.closePath();
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    // Overkropp
+                    avatarCtx.fillStyle = '#667eea';
+                    avatarCtx.strokeStyle = '#000';
+                    avatarCtx.lineWidth = 3;
+                    avatarCtx.beginPath();
+                    avatarCtx.moveTo(lShoulderX, lShoulderY);
+                    avatarCtx.lineTo(lHipX, lHipY);
+                    avatarCtx.lineTo(rHipX, rHipY);
+                    avatarCtx.lineTo(rShoulderX, rShoulderY);
+                    avatarCtx.closePath();
+                    avatarCtx.fill();
+                    avatarCtx.stroke();
+                    
+                    // Armer (speil X-koordinater)
+                    avatarCtx.strokeStyle = '#667eea';
+                    avatarCtx.lineWidth = 12;
+                    avatarCtx.lineCap = 'round';
+                    
+                    if (leftElbow && leftWrist) {
+                        const lElbowX = (1 - leftElbow.x) * w;
+                        const lElbowY = leftElbow.y * h;
+                        const lWristX = (1 - leftWrist.x) * w;
+                        const lWristY = leftWrist.y * h;
+                        
+                        avatarCtx.beginPath();
+                        avatarCtx.moveTo(lShoulderX, lShoulderY);
+                        avatarCtx.lineTo(lElbowX, lElbowY);
+                        avatarCtx.lineTo(lWristX, lWristY);
+                        avatarCtx.stroke();
+                    }
+                    
+                    if (rightElbow && rightWrist) {
+                        const rElbowX = (1 - rightElbow.x) * w;
+                        const rElbowY = rightElbow.y * h;
+                        const rWristX = (1 - rightWrist.x) * w;
+                        const rWristY = rightWrist.y * h;
+                        
+                        avatarCtx.beginPath();
+                        avatarCtx.moveTo(rShoulderX, rShoulderY);
+                        avatarCtx.lineTo(rElbowX, rElbowY);
+                        avatarCtx.lineTo(rWristX, rWristY);
+                        avatarCtx.stroke();
+                    }
+                }
+            }
+            
+            // Tegn håndbevegelser (speil X-koordinater og speil emojier på høyre hånd)
+            if (latestHandData && latestHandData.size > 0) {
+                for (const [handedness, data] of latestHandData.entries()) {
+                    const landmarks = data.landmarks;
+                    const wrist = landmarks[0];
+                    
+                    // SPEIL X: (1 - x) * w
+                    const avatarHandX = (1 - wrist.x) * w;
+                    const avatarHandY = wrist.y * h;
+                    
+                    avatarCtx.save();
+                    
+                    // Speilvend emojier for høyre hånd på spesifikke gesturer
+                    const shouldMirror = (handedness === 'Venstre' && data.gesture.name === 'OK') ||
+                                        (handedness === 'Høyre' && 
+                                         (data.gesture.name === 'Papir' || 
+                                          data.gesture.name === 'Rock' || 
+                                          data.gesture.name === 'Stein' ||
+                                          data.gesture.name === 'Saks' ||
+                                          data.gesture.name === 'Peker'));
+                    
+                    if (shouldMirror) {
+                        avatarCtx.translate(avatarHandX, avatarHandY);
+                        avatarCtx.scale(-1, 1); // Speil horisontalt
+                        avatarCtx.font = 'bold 100px Arial';
+                        avatarCtx.textAlign = 'center';
+                        avatarCtx.textBaseline = 'middle';
+                        avatarCtx.fillText(data.gesture.emoji, 0, 0);
+                    } else {
+                        avatarCtx.font = 'bold 100px Arial';
+                        avatarCtx.textAlign = 'center';
+                        avatarCtx.textBaseline = 'middle';
+                        avatarCtx.fillText(data.gesture.emoji, avatarHandX, avatarHandY);
+                    }
+                    
+                    avatarCtx.restore();
+                }
+            }
+        }
+        
+        // Toggle-funksjoner
+        function toggleFaceTracking() {
+            faceTrackingEnabled = !faceTrackingEnabled;
+            const btn = document.getElementById('faceTrackBtn');
+            if (faceTrackingEnabled) {
+                btn.textContent = '😊 Ansikt: PÅ';
+                btn.classList.add('active');
+            } else {
+                btn.textContent = '😊 Ansikt: AV';
+                btn.classList.remove('active');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                detectedPeople.clear();
+                document.getElementById('peopleCount').textContent = '0';
+            }
+        }
+        
+        function toggleHandTracking() {
+            handTrackingEnabled = !handTrackingEnabled;
+            const btn = document.getElementById('handTrackBtn');
+            if (handTrackingEnabled) {
+                btn.textContent = '✋ Hender: PÅ';
+                btn.classList.add('active');
+            } else {
+                btn.textContent = '✋ Hender: AV';
+                btn.classList.remove('active');
+                latestHandData = null;
+                document.getElementById('handsCount').textContent = '0';
+                if (showAvatar && avatarCanvas) {
+                    drawAvatar();
+                }
+            }
+        }
+        
+        function toggleBodyTrackingVisual() {
+            bodyTrackingVisualEnabled = !bodyTrackingVisualEnabled;
+            const btn = document.getElementById('bodyTrackBtn');
+            if (bodyTrackingVisualEnabled) {
+                btn.textContent = '🧍 Kropp: PÅ';
+                btn.classList.add('active');
+            } else {
+                btn.textContent = '🧍 Kropp: AV';
+                btn.classList.remove('active');
+            }
+        }
+        
+        function stopDetection() {
+            isDetecting = false;
+            
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            detectedPeople.clear();
+            latestHandData = null;
+            latestPoseData = null;
+            latestFaceDetections = null;
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('peopleCount').textContent = '0';
+            document.getElementById('handsCount').textContent = '0';
+            document.getElementById('peopleList').innerHTML = '<p style="color: #999; text-align: center;">Ingen person oppdaget ennå...</p>';
+            
+            updateStatus('Kamera stoppet');
+        }
+        
+        window.addEventListener('load', () => {
+            const checkLibraries = setInterval(() => {
+                if (typeof faceapi !== 'undefined' && typeof Hands !== 'undefined' && typeof Pose !== 'undefined') {
+                    clearInterval(checkLibraries);
+                    loadModels();
+                }
+            }, 100);
+            
+            // Start bakgrunnsanimasjon
+            initFallingItems();
+        });
+        
+        // ===== BAKGRUNNSANIMASJON: FALLENDE EMOJIER OG SPESIALCHANCES =====
+        function createFallingItem() {
+            const container = document.getElementById('fallingContainer');
+            const item = document.createElement('span');
+            
+            // Array med emojier for ansiktsgjenkjenning (60% sjanse)
+            const emojis = ['😊', '😢', '😡', '😱', '🤮', '😮', '😐', '👤', '✋', '🎭', '👁️', '🤖'];
+            
+            // Array med vanlige bilder (28% sjanse totalt)
+            const regularImages = [
+                { src: 'web/static/images/Starmie.png', scale: 0.125 },
+                { src: 'web/static/images/pikachu.png', scale: 0.075 },
+                { src: 'web/static/images/Mario.png', scale: 0.30 },
+                { src: 'web/static/images/Luigi.png', scale: 0.15 },
+                { src: 'web/static/images/Gengar.png', scale: 0.10 },
+                { src: 'web/static/images/EchoesOfTime_iphoto.png', scale: 0.25 },
+                { src: 'web/static/images/Ditto.png', scale: 0.10 },
+                { src: 'web/static/images/Weezing.png', scale: 0.30 },
+                { src: 'web/static/images/hiof_merke.png', scale: 0.15 },
+                { src: 'web/static/images/hiof_logo.png', scale: 0.15 }
+            ];
+            
+            // Array med super rare bilder (2% sjanse)
+            const rareImages = [
+                { src: 'web/static/images/Bambu.png', scale: 0.12 },
+                { src: 'web/static/images/DanielNJ.png', scale: 0.09 },
+                { src: 'web/static/images/Easter_egg.png', scale: 0.216 },
+                { src: 'web/static/images/FFK.png', scale: 0.12 },
+                { src: 'web/static/images/Hoste.png', scale: 0.30 },
+                { src: 'web/static/images/mario2.png', scale: 0.30 },
+                { src: 'web/static/images/RA.png', scale: 0.15 },
+                { src: 'web/static/images/SandSlott.png', scale: 0.24 }
+            ];
+            
+            const randomValue = Math.random();
+            let itemSize;
+            
+            // 2% sjanse for super rare bilder
+            if (randomValue < 0.02) {
+                const randomRare = rareImages[Math.floor(Math.random() * rareImages.length)];
+                const rareImg = document.createElement('img');
+                rareImg.src = randomRare.src;
+                rareImg.onload = function() {
+                    const originalWidth = this.naturalWidth;
+                    const originalHeight = this.naturalHeight;
+                    this.style.width = (originalWidth * randomRare.scale) + 'px';
+                    this.style.height = (originalHeight * randomRare.scale) + 'px';
+                };
+                rareImg.style.objectFit = 'contain';
+                item.appendChild(rareImg);
+                item.classList.add('no-rotate'); // Rare bilder spinner ikke!
+                itemSize = 1;
+            }
+            // 28% sjanse for vanlige bilder
+            else if (randomValue < 0.30) {
+                const randomRegular = regularImages[Math.floor(Math.random() * regularImages.length)];
+                const regularImg = document.createElement('img');
+                regularImg.src = randomRegular.src;
+                regularImg.onload = function() {
+                    const originalWidth = this.naturalWidth;
+                    const originalHeight = this.naturalHeight;
+                    this.style.width = (originalWidth * randomRegular.scale) + 'px';
+                    this.style.height = (originalHeight * randomRegular.scale) + 'px';
+                };
+                regularImg.style.objectFit = 'contain';
+                item.appendChild(regularImg);
+                itemSize = 1;
+            }
+            // 60% sjanse for emojier (resten av 100%)
+            else {
+                item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                itemSize = Math.random() * 2.8 + 1.4; // 1.4rem til 4.2rem
+            }
+            
+            item.classList.add('falling-item');
+
+            // Tilfeldig startposisjon OVER HELE SKJERMEN (0-100%)
+            const startLeft = Math.random() * 100;
+            
+            // Variasjon i hastighet
+            const animationDuration = Math.random() * 7 + 6; // 6 til 13 sekunder
+            const animationDelay = Math.random() * 15; // 0 til 15 sekunder
+
+            item.style.setProperty('--start-left', `${startLeft}vw`);
+            item.style.setProperty('--item-size', `${itemSize}rem`);
+            item.style.setProperty('--animation-duration', `${animationDuration}s`);
+            item.style.setProperty('--animation-delay', `-${animationDelay}s`);
+
+            container.appendChild(item);
+
+            // Fjern elementet når animasjonen er ferdig
+            item.addEventListener('animationend', () => {
+                item.remove();
+            });
+        }
+        
+        let fallingItemsInterval = null; // Global variabel for intervallet
+        let countdownInterval = null; // Global variabel for countdown
+        let countdownSeconds = 180; // 3 minutter i sekunder
+        
+        // Funksjon for å oppdatere countdown display
+        function updateCountdownDisplay() {
+            const minutes = Math.floor(countdownSeconds / 60);
+            const seconds = countdownSeconds % 60;
+            const displayText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('countdownText').textContent = displayText;
+        }
+        
+        // Funksjon for å starte countdown
+        function startCountdown() {
+            // Stopp eksisterende countdown hvis den kjører
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Reset til 3 minutter
+            countdownSeconds = 180;
+            updateCountdownDisplay();
+            
+            // Start ny countdown
+            countdownInterval = setInterval(() => {
+                countdownSeconds--;
+                updateCountdownDisplay();
+                
+                // Når den når 0, refresh animasjonen
+                if (countdownSeconds <= 0) {
+                    refreshFallingAnimation();
+                }
+            }, 1000); // Oppdater hvert sekund
+        }
+        
+        function initFallingItems() {
+            const numberOfItems = 21; // Antall fallende elementer
+            for (let i = 0; i < numberOfItems; i++) {
+                setTimeout(() => {
+                    createFallingItem();
+                }, Math.random() * 2000); // Spread ut spawningen over 2 sekunder
+            }
+            
+            // Kontinuerlig generering av nye elementer
+            if (fallingItemsInterval) {
+                clearInterval(fallingItemsInterval);
+            }
+            fallingItemsInterval = setInterval(createFallingItem, 800); // Ny emoji/bilde hvert 0.8 sekund
+            
+            // Start countdown timer
+            startCountdown();
+        }
+        
+        // Funksjon for å refreshe animasjonen (fjern alle og start på nytt)
+        function refreshFallingAnimation() {
+            console.log('🔄 Refresher bakgrunnsanimasjon...');
+            
+            // Stopp det gamle intervallet
+            if (fallingItemsInterval) {
+                clearInterval(fallingItemsInterval);
+            }
+            
+            // Fjern alle eksisterende fallende elementer
+            const container = document.getElementById('fallingContainer');
+            container.innerHTML = '';
+            
+            // Start animasjonen på nytt
+            initFallingItems();
+        }
+    </script>
+</body>
+</html>

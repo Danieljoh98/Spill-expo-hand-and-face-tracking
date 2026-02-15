@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch 2 Konkurranse - Høgskolen i Østfold</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Registreringsskjerm -->
+    <div id="registrering-skjerm" class="container">
+        <!-- Header med logo -->
+        <div class="header">
+            <div class="header-content">
+                <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="logo">
+                <h1>VINN EN NINTENDO SWITCH 2</h1>
+                <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="logo">
+            </div>
+        </div>
+
+        <!-- Informasjonstekst -->
+        <div class="info-text">
+            <p>Delta i konkurransen ved å prøve spill laget av studenter<br>
+            på Høgskolen i Østfold og få sjansen til å vinne en Nintendo Switch 2!</p>
+            <p>Fyll ut informasjonen din nedenfor, spill spillet,<br>
+            og registrer resultatet ditt for å delta i trekningen.</p>
+        </div>
+
+        <!-- Skjema -->
+        <div class="form-container">
+            <div class="form-inner">
+                <div class="form-group">
+                    <label for="navn">Navn:</label>
+                    <input type="text" id="navn" name="navn" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefon">Telefonnummer:</label>
+                    <input type="text" id="telefon" name="telefon" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="epost">E-post:</label>
+                    <input type="email" id="epost" name="epost" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start-knapp -->
+        <div class="button-container">
+            <button id="start-knapp" class="btn-primary">Start ECHOES OF TIME</button>
+        </div>
+
+        <!-- Status melding -->
+        <div id="status-melding" class="status-melding"></div>
+    </div>
+
+    <!-- Venteskjerm -->
+    <div id="vente-skjerm" class="container" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="logo">
+                <h1>SPILL OG REGISTRER</h1>
+                <img src="{{ url_for('static', filename='images/hiof_logo.png') }}" alt="HiØF Logo" class="logo">
+            </div>
+        </div>
+
+        <!-- Kontaktinformasjon -->
+        <div class="info-container">
+            <div class="info-inner">
+                <h2>Din Kontaktinformasjon</h2>
+
+                <div class="info-row">
+                    <label>Navn:</label>
+                    <input type="text" id="vente-navn" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('navn')">Rediger</button>
+                </div>
+
+                <div class="info-row">
+                    <label>Telefon:</label>
+                    <input type="text" id="vente-telefon" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('telefon')">Rediger</button>
+                </div>
+
+                <div class="info-row">
+                    <label>E-post:</label>
+                    <input type="email" id="vente-epost" readonly>
+                    <button class="btn-edit" onclick="toggleEdit('epost')">Rediger</button>
+                </div>
+
+                <div id="rediger-status" class="rediger-status"></div>
+            </div>
+        </div>
+
+        <!-- Melding -->
+        <div class="melding-container">
+            <h2 class="success-text">Echoes of Time-spillet er startet!</h2>
+            <p>Spill Echoes of Time og få poeng!<br>
+            Når du er ferdig, lukk spillvinduet og klikk knappen nedenfor.</p>
+        </div>
+
+        <!-- Registrer-knapp -->
+        <div class="button-container">
+            <button id="registrer-knapp" class="btn-register">REGISTRER DEG</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

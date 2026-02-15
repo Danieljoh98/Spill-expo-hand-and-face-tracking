@@ -1,0 +1,305 @@
+/* HiØF Fargepalett */
+:root {
+    --hiof-sort: #23201F;
+    --hiof-korall: #D78669;
+    --hiof-sjogronn: #6FC2B4;
+    --hiof-lys-varmgra: #ECEAE5;
+    --hiof-lavendel: #A398A3;
+    --hiof-aquabla: #347E84;
+    --hiof-varmgra: #C8C2BE;
+    --hiof-hvit: #FFFFFF;
+}
+
+/* Global styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--hiof-lys-varmgra);
+    color: var(--hiof-sort);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1920px;
+    padding: 20px;
+}
+
+/* Header styling */
+.header {
+    background-color: var(--hiof-aquabla);
+    padding: 40px 20px;
+    margin-bottom: 25px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.logo {
+    width: 120px;
+    height: 120px;
+    filter: brightness(0) invert(1);
+}
+
+.header h1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--hiof-hvit);
+    text-align: center;
+}
+
+/* Informasjonstekst */
+.info-text {
+    text-align: center;
+    font-size: 14px;
+    margin: 20px 60px;
+    line-height: 1.6;
+}
+
+/* Skjema container */
+.form-container {
+    background-color: var(--hiof-hvit);
+    margin: 25px 250px;
+    padding: 30px 40px;
+    border-radius: 5px;
+}
+
+.form-inner {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    gap: 15px;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 180px;
+    text-align: left;
+}
+
+.form-group input {
+    flex: 1;
+    font-size: 14px;
+    padding: 10px;
+    border: 2px solid var(--hiof-varmgra);
+    border-radius: 3px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--hiof-aquabla);
+}
+
+/* Knapper */
+.button-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.btn-primary {
+    background-color: var(--hiof-sjogronn);
+    color: var(--hiof-hvit);
+    font-size: 20px;
+    font-weight: bold;
+    padding: 25px 60px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--hiof-aquabla);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Status melding */
+.status-melding {
+    text-align: center;
+    font-size: 12px;
+    margin: 15px 0;
+    min-height: 20px;
+}
+
+.status-melding.error {
+    color: red;
+}
+
+.status-melding.success {
+    color: var(--hiof-sjogronn);
+}
+
+/* Info container (venteskjerm) */
+.info-container {
+    background-color: var(--hiof-hvit);
+    margin: 15px 200px;
+    padding: 20px 40px;
+    border-radius: 5px;
+}
+
+.info-inner h2 {
+    color: var(--hiof-aquabla);
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    gap: 10px;
+}
+
+.info-row label {
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 120px;
+}
+
+.info-row input {
+    flex: 1;
+    font-size: 14px;
+    padding: 8px;
+    border: 1px solid var(--hiof-varmgra);
+    border-radius: 3px;
+    background-color: var(--hiof-lys-varmgra);
+}
+
+.info-row input:not([readonly]) {
+    background-color: var(--hiof-hvit);
+    border-color: var(--hiof-aquabla);
+}
+
+.btn-edit {
+    background-color: var(--hiof-korall);
+    color: var(--hiof-hvit);
+    font-size: 11px;
+    padding: 4px 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: var(--hiof-sjogronn);
+}
+
+.btn-edit.lagre {
+    background-color: var(--hiof-sjogronn);
+}
+
+.rediger-status {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.rediger-status.error {
+    color: red;
+}
+
+.rediger-status.success {
+    color: var(--hiof-sjogronn);
+}
+
+/* Melding container */
+.melding-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.success-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--hiof-sjogronn);
+    margin-bottom: 8px;
+}
+
+.melding-container p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 5px;
+}
+
+/* Registrer-knapp */
+.btn-register {
+    background-color: var(--hiof-aquabla);
+    color: var(--hiof-hvit);
+    font-size: 24px;
+    font-weight: bold;
+    padding: 30px 80px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-register:hover {
+    background-color: var(--hiof-sjogronn);
+}
+
+.btn-register:active {
+    transform: scale(0.98);
+}
+
+/* Responsiv design */
+@media (max-width: 1400px) {
+    .form-container {
+        margin: 25px 150px;
+    }
+    
+    .info-container {
+        margin: 15px 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .form-container,
+    .info-container {
+        margin: 20px;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .btn-primary,
+    .btn-register {
+        font-size: 18px;
+        padding: 20px 40px;
+    }
+}
