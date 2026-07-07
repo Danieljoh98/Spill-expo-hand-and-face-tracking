@@ -1,20 +1,20 @@
-# 🎭 MIMIKKMESTER - Din digitale tvilling
+# MIMIKKMESTER - Din digitale tvilling
 
-## 📖 OM APPLIKASJONEN
+## OM APPLIKASJONEN
 
 **MimikkMester** er en avansert nettbasert ansiktsgjenkjennings- og bevegelsesdeteksjonsapplikasjon utviklet for Høgskolen i Østfold (HiØF). Applikasjonen bruker AI og maskinlæring for å analysere ansiktsuttrykk, håndbevegelser og kroppsspråk i sanntid.
 
 **Hovedfunksjoner:**
-- ✨ Ansiktsgjenkjenning med uttrykksdeteksjon (glad, trist, sint, redd, avsky, overrasket, nøytral)
-- ✋ Håndbevegelsesgjenkjenning (Stein, Saks, Papir, Tommel opp, OK, Rock, Peker)
-- 🧍 Kroppssporing med skjelettvisualisering
-- 🤖 Interaktiv tegnefilmavatar som speiler dine bevegelser
-- 🎨 Animert bakgrunn med fallende emojier og bilder
-- 🎯 Uttrykksbaserte bakgrunnsfarger for avataren
+- Ansiktsgjenkjenning med uttrykksdeteksjon (glad, trist, sint, redd, avsky, overrasket, nøytral)
+- Håndbevegelsesgjenkjenning (Stein, Saks, Papir, Tommel opp, OK, Rock, Peker)
+- Kroppssporing med skjelettvisualisering
+- Interaktiv tegnefilmavatar som speiler dine bevegelser
+- Animert bakgrunn med fallende emojier og bilder
+- Uttrykksbaserte bakgrunnsfarger for avataren
 
 ---
 
-## 🚀 SLIK KOMMER DU I GANG
+# SLIK KOMMER DU I GANG
 
 ### 1. Åpne applikasjonen:
 Dobbeltklikk på: **advanced-recognition.html**
@@ -28,16 +28,16 @@ Første gang må du godkjenne kameratilgang når nettleseren spør.
 Klikk på **"Start Kamera"** når AI-modellene er lastet.
 
 ### 4. Bruk funksjonene:
-- 😊 **Ansikt: PÅ/AV** - Skru av/på ansiktsgjenkjenning
-- ✋ **Hender: PÅ/AV** - Skru av/på håndgjenkjenning  
-- 🧍 **Kropp: PÅ/AV** - Skru av/på kroppssporing
-- 🤖 **Vis Avatar** - Vis din digitale tegnefilmavatar
+- **Ansikt: PÅ/AV** - Skru av/på ansiktsgjenkjenning
+- **Hender: PÅ/AV** - Skru av/på håndgjenkjenning  
+- **Kropp: PÅ/AV** - Skru av/på kroppssporing
+- **Vis Avatar** - Vis din digitale tegnefilmavatar
 
 ---
 
-## 🎮 FUNKSJONER I DETALJ
+## FUNKSJONER I DETALJ
 
-### 📸 Ansiktsgjenkjenning
+### Ansiktsgjenkjenning
 Detekterer ansiktet ditt og viser:
 - **Person oppdaget** - Hvor mange ansikter som er synlige
 - **Uttrykk** - Hvilken følelse som vises (glad, trist, sint osv.)
@@ -65,15 +65,15 @@ Gjenkjenner håndbevegelser:
 
 **Spesiell funksjon:** Emojiene speilvender seg automatisk for høyre hånd!
 
-### 🧍 Kroppssporing
+### Kroppssporing
 Viser kroppens bevegelses skjelett med:
 - Skulder-til-skulder kobling
 - Arm-ledd (skulder-albue-håndledd)
-- Torso (skulder-til-hofte)
+- kropp (skulder-til-hofte)
 - Nakke-kobling fra ansikt til skuldre
 - Ben-ledd (hofte-kne-ankel)
 
-### 🤖 Tegnefilmavatar
+### Tegnefilmavatar
 En interaktiv avatar som:
 - **Speiler dine bevegelser** - Følger hodet, kroppen og hendene dine
 - **Viser ditt uttrykk** - Endrer ansiktet basert på dine følelser
@@ -99,7 +99,7 @@ En interaktiv avatar som:
 
 ---
 
-## 🎨 ANIMERTE BAKGRUNNER
+## ANIMERTE BAKGRUNNER
 
 **Fallende elementer:**
 - Emojier (😊, 😢, 😡, osv.) - 60% sjanse
@@ -136,7 +136,7 @@ En interaktiv avatar som:
 
 ---
 
-## 📂 FILSTRUKTUR
+## FILSTRUKTUR
 
 ```
 smile/
@@ -151,7 +151,7 @@ smile/
 │           ├── pikachu.png
 │           ├── Mario.png
 │           └── ... (flere Pokemon/karakterer)
-├── super rare dropdowns/       ← SUPER RARE Easter eggs! 🎁
+├── super rare dropdowns/       ← SUPER RARE Easter eggs! 
 │   ├── DanielNJ.png
 │   ├── Easter_egg.png
 │   └── ... (8 hemmelige bilder)
@@ -160,7 +160,7 @@ smile/
 
 ---
 
-## 🎯 BRUKSSCENARIER
+## BRUKSSCENARIER
 
 ### Presentasjoner og Undervisning:
 Ideell for å demonstrere:
@@ -182,7 +182,7 @@ Ideell for å demonstrere:
 
 ---
 
-## 👨‍💻 UTVIKLER
+## UTVIKLER
 
 **Laget av:**
 Daniel Nilsen Johansen  
@@ -193,7 +193,7 @@ Høgskolen i Østfold (HiØF)
 
 ---
 
-## 📝 KJENTE BEGRENSNINGER
+## KJENTE BEGRENSNINGER
 
 - Fungerer best i godt opplyste rom
 - Kun én person detekteres om gangen (første ansikt i bildet)
@@ -203,26 +203,26 @@ Høgskolen i Østfold (HiØF)
 
 ---
 
-## 🔐 PERSONVERN
+## PERSONVERN
 
 **OBS:** Applikasjonen kjører 100% lokalt i nettleseren din.  
 Ingen video eller data sendes til servere. Alt skjer på din egen maskin.
 
 ---
 
-## 🎁 EASTER EGGS
+##  EASTER EGGS
 
 Prøv å finne de 8 super rare bildene! (2% sjanse hver)
-- 🎋 Bambu
-- 👨‍💻 Daniel NJ (utvikleren!)
-- 🥚 Easter egg
-- ⚽ FFK (Fredrikstad Fotballklubb)
-- 🤧 Hoste
-- 🍄 Mario 2
-- 🎓 RA (Rektorassistenten?)
-- 🏰 Sandslott
+-  Bambu
+-  Daniel NJ (utvikleren!)
+-  Easter egg
+-  FFK
+-  Hoste
+-  Mario 2
+-  RA 
+-  Sandslott
 
 ---
 
-Laget med ❤️ for Høgskolen i Østfold
+Laget for Høgskolen i Østfold
 Versjon 1.0 - Februar 2025
